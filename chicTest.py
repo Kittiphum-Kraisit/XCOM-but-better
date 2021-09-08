@@ -36,24 +36,33 @@ def addpic(position, cellsize):
     x, y = position
     sizeX, sizeY = cellsize
     catImg = pygame.image.load('pic/pop-cat.png')
-    catImg = pygame.transform.scale(catImg, (math.floor(sizeX), math.floor(sizeY)))
-    DISPLAYSURF.blit(catImg, (x, y))
+    catImg = pygame.transform.scale(catImg, (math.floor(sizeX -4.5), math.floor(sizeY -4.5)))
+    DISPLAYSURF.blit(catImg, (x+3, y+3))
+    return (x, y)
 
-def check_pressed(table):
+def movepic(position, cellsize, last_position):
+    x, y = position
+    x1, y1 = last_position
+    sizeX, sizeY = cellsize
+    black = pygame.image.load('pic/black.jpg')
+    black = pygame.transform.scale(black, (math.floor(sizeX-4.5), math.floor(sizeY-4.5)))
+    # print(last_position)
+    DISPLAYSURF.blit(black, (x1+3, y1+3))
+    catImg = pygame.image.load('pic/pop-cat.png')
+    catImg = pygame.transform.scale(catImg, (math.floor(sizeX-4.5), math.floor(sizeY-4.5)))
+    DISPLAYSURF.blit(catImg, (x+3, y+3))
+    return (x+3, y+3)
+
+def check_pressed(table , ract_obj, cellsize, old_position):
     mousex, mousey = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
     if click != (0, 0, 0):
-        # print(mousex)
-        # print(mousey)
-        # print(str(table[0][0].positionX) + " : " + str(table[0][0].dimensionX))
-        # print(str(table[0][0].positionY) + " : " + str(table[0][0].dimensionY))
-        for i in range(len(table)):
-            for l in range(len(table[i])):
-                if table[i][l].positionX < mousex < table[i][l].dimensionX:
-                    if table[i][l].positionY < mousey < table[i][l].dimensionY:
-                        print(table[i][l].indexX)
-                        print(table[i][l].indexY)
+        for i in range(len(ract_obj)):
+            for l in range(len(ract_obj[i])):
+                if ract_obj[i][l].collidepoint(mousex, mousey):
+                    movepic((table[i][l].positionX, table[i][l].positionY), cellsize, old_position)
+                    return (table[i][l].positionX, table[i][l].positionY)
 
 def makeclass(positions, cellsize):
     obj = []
@@ -64,19 +73,36 @@ def makeclass(positions, cellsize):
         obj.append(row)
     return obj
 
-pygame.init()
-DISPLAYSURF = pygame.display.set_mode((720, 720))
-color2 = pygame.Color(255, 255, 255)   # White
-x = 1
-y = 4
-a, cellsize = drawtable(10, (120, 50), (620, 505))
-table_obj = makeclass(a, cellsize)
+def makeract(table, cellsize):
+    ractobj = []
+    lenX, lenY = cellsize
+    for i in range(len(table)):
+        ractrow = []
+        for l in range(len(table[i])):
+            box = pygame.Rect(table[i][l].positionX, table[i][l].positionY, lenX, lenY)
+            ractrow.append(box)
+        ractobj.append(ractrow)
+    return ractobj
 
-while True:
-    pygame.display.update()
-    addpic(a[x][y], cellsize)
-    check_pressed(table_obj)
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            sys.exit()
+
+if __name__ == "__main__":
+    pygame.init()
+    DISPLAYSURF = pygame.display.set_mode((720, 720))
+    color2 = pygame.Color(255, 255, 255)  # White
+    x = 1
+    y = 4
+    a, cellsize = drawtable(10, (120, 50), (620, 505))
+    table_obj = makeclass(a, cellsize)
+    ract_obj = makeract(table_obj, cellsize)
+    oldposition = addpic(a[x][y], cellsize)
+
+    while True:
+        pygame.display.update()
+        new_pos = check_pressed(table_obj, ract_obj, cellsize, oldposition)
+        if new_pos != None:
+            print(new_pos)
+            oldposition = new_pos
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                sys.exit()
