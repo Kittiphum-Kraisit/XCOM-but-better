@@ -8,12 +8,12 @@ class grid():
         indX, indY = index
         posx, posy = position
         diX, diY = dimension
-        self.positionX = posx
-        self.positionY = posy
-        self.dimensionX = diX
-        self.dimensionY = diY
-        self.rangeX = posx + diX
-        self.rangeY = posy + diY
+        self.positionX = math.floor(posx)
+        self.positionY = math.floor(posy)
+        self.dimensionX = math.floor(diX) + math.floor(posx)
+        self.dimensionY = math.floor(diY) + math.floor(posy)
+        self.rangeX = math.floor(posx + diX)
+        self.rangeY = math.floor(posy + diY)
         self.indexX = indX
         self.indexY = indY
 
@@ -39,29 +39,43 @@ def addpic(position, cellsize):
     catImg = pygame.transform.scale(catImg, (math.floor(sizeX), math.floor(sizeY)))
     DISPLAYSURF.blit(catImg, (x, y))
 
-def check_pressed():
+def check_pressed(table):
     mousex, mousey = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
     if click != (0, 0, 0):
-        print(mousex)
-        print(mousey)
+        # print(mousex)
+        # print(mousey)
+        # print(str(table[0][0].positionX) + " : " + str(table[0][0].dimensionX))
+        # print(str(table[0][0].positionY) + " : " + str(table[0][0].dimensionY))
+        for i in range(len(table)):
+            for l in range(len(table[i])):
+                if table[i][l].positionX < mousex < table[i][l].dimensionX:
+                    if table[i][l].positionY < mousey < table[i][l].dimensionY:
+                        print(table[i][l].indexX)
+                        print(table[i][l].indexY)
 
 def makeclass(positions, cellsize):
     obj = []
-    obj.append(grid())
+    for i in range(len(positions)):
+        row = []
+        for l in range(len(positions[i])):
+            row.append(grid(positions[i][l], cellsize, (i, l)))
+        obj.append(row)
+    return obj
 
 pygame.init()
 DISPLAYSURF = pygame.display.set_mode((720, 720))
 color2 = pygame.Color(255, 255, 255)   # White
+x = 1
+y = 4
+a, cellsize = drawtable(10, (120, 50), (620, 505))
+table_obj = makeclass(a, cellsize)
 
 while True:
     pygame.display.update()
-    x = 1
-    y = 4
-    a, cellsize = drawtable(10, (120, 50), (620, 505))
     addpic(a[x][y], cellsize)
-    check_pressed()
+    check_pressed(table_obj)
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
