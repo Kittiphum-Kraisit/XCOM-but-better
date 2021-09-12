@@ -4,6 +4,7 @@ import sys
 import math
 
 class grid():
+    # create grid class object
     def __init__(self, position, dimension, index):
         indX, indY = index
         posx, posy = position
@@ -18,6 +19,8 @@ class grid():
         self.indexY = indY
 
 def drawtable(table, top_left, bottom_right):
+    # draw the table on the display surface
+    # parameter (the number of cell you want in each direction, pixel position of top_left of table, pixel position of bottom_right of table)
     big_table = []
     row = []
     tl_x, tl_y = top_left
@@ -33,6 +36,8 @@ def drawtable(table, top_left, bottom_right):
     return big_table, (abs(tl_x-br_x)/table, abs(tl_y-br_y)/table)
 
 def addpic(position, cellsize):
+    # create new image on input position
+    # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell)
     x, y = position
     sizeX, sizeY = cellsize
     catImg = pygame.image.load('pic/pop-cat.png')
@@ -41,6 +46,9 @@ def addpic(position, cellsize):
     return (x, y)
 
 def movepic(position, cellsize, last_position):
+    # create new image on input position and create black layer over last image
+    # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell-
+    # -, the tuple of pixel position of last image)
     x, y = position
     x1, y1 = last_position
     sizeX, sizeY = cellsize
@@ -54,6 +62,9 @@ def movepic(position, cellsize, last_position):
     return (x+3, y+3)
 
 def check_pressed(table , ract_obj, cellsize, old_position):
+    # check if the mouse is pressed
+    # parameter (2D array of grid class objects, 2D array of rect objects, tuple contain (width, and height) of one cell in table-
+    # -, the tuple of pixel position of last image)
     mousex, mousey = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -65,6 +76,8 @@ def check_pressed(table , ract_obj, cellsize, old_position):
                     return (table[i][l].positionX, table[i][l].positionY)
 
 def makeclass(positions, cellsize):
+    # create grid class object to collect position, dimension, index in single object
+    # parameter (2D array of tuples contain pixel position (x,y) of each cell, tuple contain (width, and height) of one cell in table)
     obj = []
     for i in range(len(positions)):
         row = []
@@ -74,6 +87,8 @@ def makeclass(positions, cellsize):
     return obj
 
 def makeract(table, cellsize):
+    # create rectangle object to use as hitbox for table
+    # parameter (2D array of grid class objects, tuple contain (width, and height) of one cell in table)
     ractobj = []
     lenX, lenY = cellsize
     for i in range(len(table)):
