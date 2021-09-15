@@ -61,8 +61,8 @@ c = []
 for i in range (0,5):
      c.append(char_card(90 + (150*i), 100, i))
 
-for i in range (4,10):
-     c.append(char_card(90 + (150*(i-4)), 300, i))
+for i in range (5,10):
+     c.append(char_card(90 + (150*(i-5)), 300, i))
 
 
 run = True
