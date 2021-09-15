@@ -1,6 +1,6 @@
 import json
 
-f = open('characters.json', )
+f = open('module/characters.json', )
 data = json.load(f)
 
 
