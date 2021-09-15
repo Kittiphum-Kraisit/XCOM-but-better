@@ -3,6 +3,12 @@ from module.Character import choose_char
 from module.function import *
 from module.chicTest import *
 
+#start pygame
+pygame.init()
+DISPLAYSURF = pygame.display.set_mode((720, 720))
+clock = pygame.time.Clock()
+fps = 60
+
 Select_characters = '\nCharacter List: \n\n\
     1 : Battlemage \n\
     2 : Granadier \n\
@@ -15,8 +21,8 @@ Select_characters = '\nCharacter List: \n\n\
     9 : Infiltrator\n\
     10 : Hospitallier\n'
     
-t1,t2 = [],[]
-init1, init2 = [],[]
+t1, t2 = [], []
+init1, init2 = [], []
 queue = []
 
 board = [['' for i in range(10)] for j in range(10)]
@@ -63,8 +69,7 @@ for i in range(0,5):
     board[start_point][9] = char_info2[i]
 
 #pygame display
-pygame.init()
-DISPLAYSURF = pygame.display.set_mode((720, 720))
+
 color2 = pygame.Color(255, 255, 255)  # White
 a, cellsize = drawtable(10, (120, 50), (620, 505), DISPLAYSURF)
 table_obj = makeclass(a, cellsize)
@@ -89,6 +94,13 @@ for i in char_info2:
 
 # game start
 while( len(char_info1) != 0 and len(char_info2) != 0):
+
+
+
+    #pygame update
+    pygame.display.update()
+    clock.tick(fps)
+
     pygame.event.get()
     #roll initiative
     init1.clear()
