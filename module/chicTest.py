@@ -35,12 +35,12 @@ def drawtable(table, top_left, bottom_right):
         row = []
     return big_table, (abs(tl_x-br_x)/table, abs(tl_y-br_y)/table)
 
-def addpic(position, cellsize):
+def addpic(position, cellsize, picname):
     # create new image on input position
     # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell)
     x, y = position
     sizeX, sizeY = cellsize
-    catImg = pygame.image.load('pic/pop-cat.png')
+    catImg = pygame.image.load('../pic/pop-cat.png')
     catImg = pygame.transform.scale(catImg, (math.floor(sizeX -4.5), math.floor(sizeY -4.5)))
     DISPLAYSURF.blit(catImg, (x+3, y+3))
     return (x, y)
@@ -52,11 +52,11 @@ def movepic(position, cellsize, last_position):
     x, y = position
     x1, y1 = last_position
     sizeX, sizeY = cellsize
-    black = pygame.image.load('pic/black.jpg')
+    black = pygame.image.load('../pic/black.jpg')
     black = pygame.transform.scale(black, (math.floor(sizeX-4.5), math.floor(sizeY-4.5)))
     # print(last_position)
     DISPLAYSURF.blit(black, (x1+3, y1+3))
-    catImg = pygame.image.load('pic/pop-cat.png')
+    catImg = pygame.image.load('../pic/pop-cat.png')
     catImg = pygame.transform.scale(catImg, (math.floor(sizeX-4.5), math.floor(sizeY-4.5)))
     DISPLAYSURF.blit(catImg, (x+3, y+3))
     return (x+3, y+3)
@@ -98,6 +98,12 @@ def makeract(table, cellsize):
             ractrow.append(box)
         ractobj.append(ractrow)
     return ractobj
+
+def charsetup(charlist, position, cellsize):
+    x, y = position
+    charlist.position = (x, y)
+    addpic(position, cellsize, charlist.name)
+
 
 
 if __name__ == "__main__":
