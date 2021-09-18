@@ -17,6 +17,8 @@ class grid():
         self.rangeY = math.floor(posy + diY)
         self.indexX = indX
         self.indexY = indY
+        self.rect = pygame.Rect(self.positionX, self.positionY, diX, diY)
+        self.resident = None
 
     def drawcell(self, surface):
         color2 = pygame.Color(255, 255, 255)
@@ -25,15 +27,22 @@ class grid():
         pygame.draw.line(surface, color2, (self.rangeX, self.positionY), (self.rangeX, self.rangeY), 5)
         pygame.draw.line(surface, color2, (self.positionX, self.rangeY), (self.rangeX, self.rangeY), 5)
 
-def addpic(position, cellsize, picname, surface):
-    # create new image on input position
-    # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell)
-    x, y = position
-    sizeX, sizeY = cellsize
-    catImg = pygame.image.load('pic/pop-cat.png')
-    catImg = pygame.transform.scale(catImg, (math.floor(sizeX -4.5), math.floor(sizeY -4.5)))
-    surface.blit(catImg, (x+3, y+3))
-    return (x, y)
+    def addpic(self,picname, surface, index, team):
+        # create new image on input position
+        # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell)
+        x, y = index
+        catImg = picname
+        catImg = pygame.transform.scale(catImg, (math.floor(self.dimensionX -4.5), math.floor(self.dimensionY -4.5)))
+        if team == 1:
+            sc = pygame.Surface((math.floor(self.rect.width-4.5), math.floor(self.rect.height-4.5)))
+            sc.fill((255, 0, 0))
+            surface.blit(sc, (self.positionX+3, self.positionY+3))
+        else:
+            sc = pygame.Surface((math.floor(self.rect.width-4.5), math.floor(self.rect.height-4.5)))
+            sc.fill((0, 0, 255))
+            surface.blit(sc, (self.positionX+3, self.positionY+3))
+        surface.blit(catImg, (self.positionX+3, self.positionY+3))
+        return (x, y)
 
     def movepic(self, position, cellsize, last_position, surface):
         # create new image on input position and create black layer over last image
@@ -51,48 +60,45 @@ def addpic(position, cellsize, picname, surface):
         surface.blit(catImg, (x+3, y+3))
         return (x+3, y+3)
 
-def check_pressed(table , ract_obj, cellsize, old_position):
-    # check if the mouse is pressed
-    # parameter (2D array of grid class objects, 2D array of rect objects, tuple contain (width, and height) of one cell in table-
-    # -, the tuple of pixel position of last image)
-    mousex, mousey = pygame.mouse.get_pos()
-    click = pygame.mouse.get_pressed()
+    # def check_pressed(self, mousex, mousey):
+    #     # check if the mouse is pressed
+    #     # parameter (2D array of grid class objects, 2D array of rect objects, tuple contain (width, and height) of one cell in table-
+    #     # -, the tuple of pixel position of last image)
+    #     # mousex, mousey = pygame.mouse.get_pos()
+    #     # click = pygame.mouse.get_pressed()
+    #     #
+    #     # if click != (0, 0, 0):
+    #     if self.rect.collidepoint(mousex, mousey):
+    #         return (self.indexX, self.indexY)
+# def makeract(table, cellsize):
+#     # create rectangle object to use as hitbox for table
+#     # parameter (2D array of grid class objects, tuple contain (width, and height) of one cell in table)
+#     lenX, lenY = cellsize
+#     for i in range(len(table)):
+#         for l in range(len(table[i])):
+#             box = pygame.Rect(table[i][l].positionX, table[i][l].positionY, lenX, lenY)
+#             table[i][l].addrect(box)
 
-    if click != (0, 0, 0):
-        for i in range(len(ract_obj)):
-            for l in range(len(ract_obj[i])):
-                if ract_obj[i][l].collidepoint(mousex, mousey):
-                    movepic((table[i][l].positionX, table[i][l].positionY), cellsize, old_position)
-                    return (table[i][l].positionX, table[i][l].positionY)
+def charsetup(charlist, surface, table):
+    for i in range(len(charlist)):
+        y, x = charlist[i].Position
+        table[x][y].resident = charlist[i]
+        table[x][y].addpic(charlist[i].Icon, surface, (x, y), charlist[i].Team)
 
-def makeclass(positions, cellsize):
-    # create grid class object to collect position, dimension, index in single object
-    # parameter (2D array of tuples contain pixel position (x,y) of each cell, tuple contain (width, and height) of one cell in table)
-    obj = []
-    for i in range(len(positions)):
-        row = []
-        for l in range(len(positions[i])):
-            row.append(grid(positions[i][l], cellsize, (i, l)))
-        obj.append(row)
-    return obj
+def queuesetup(queue, surface, queuetable):
+    for i in range(len(queue)):
+        queuetable[i][0].addpic(queue[i].Icon, surface, (i, 0), queue[i].Team)
 
-def makeract(table, cellsize):
-    # create rectangle object to use as hitbox for table
-    # parameter (2D array of grid class objects, tuple contain (width, and height) of one cell in table)
-    ractobj = []
-    lenX, lenY = cellsize
-    for i in range(len(table)):
-        ractrow = []
-        for l in range(len(table[i])):
-            box = pygame.Rect(table[i][l].positionX, table[i][l].positionY, lenX, lenY)
-            ractrow.append(box)
-        ractobj.append(ractrow)
-    return ractobj
-
-def charsetup(charlist, position, cellsize, surface, table):
-    x, y = position
-    charlist.position = (x, y)
-    addpic((table[y][x].positionX, table[y][x].positionY), cellsize, "pop-cat.png", surface)
+# def makeclass(positions, cellsize):
+#     # create grid class object to collect position, dimension, index in single object
+#     # parameter (2D array of tuples contain pixel position (x,y) of each cell, tuple contain (width, and height) of one cell in table)
+#     obj = []
+#     for i in range(len(positions)):
+#         row = []
+#         for l in range(len(positions[i])):
+#             row.append(grid(positions[i][l], cellsize, (i, l)))
+#         obj.append(row)
+#     return obj
 
 def drawtable(tableX, tableY, top_left, bottom_right, surface):
     # draw the table on the display surface

@@ -4,6 +4,7 @@ from module.button import Button, draw_text, draw_bg
 from module.Character import choose_char, obj_char_create
 from module.Scene import choose_character_in_pygame, blit_rotate
 from module.function import *
+from module.chicTest import *
 
 
 pygame.init()
@@ -70,6 +71,12 @@ for i in range(5, 10):
 
 run = True
 scene = 1
+executed = False
+attacked = False
+casted = False
+old_clicked = False
+
+table_arr = []
 while run:
     screen.fill(0)
     if scene == 1:
@@ -213,6 +220,20 @@ while run:
                             c[i].available = not c[i].available
                         char_info2 = choose_char(cc_team2, 2)
                         print(char_info2)
+            if scene == 7:
+                pos = pygame.mouse.get_pos()
+                for i in range(len(table_arr)):
+                    for j in range(len(table_arr[i])):
+                        if table_arr[i][j].rect.collidepoint(pos):
+                            clicked = table_arr[i][j]
+                            print(clicked.indexX, clicked.indexY)
+                            if clicked.resident != None:
+                                old_clicked = clicked.resident
+
+
+
+
+
         if event.type == pygame.QUIT:
             run = False
     pygame.display.update()
