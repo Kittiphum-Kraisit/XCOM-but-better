@@ -13,7 +13,7 @@ fps = 60
 # screen setting
 bottom_panel = 150
 screen_width = 800
-screen_height = 400 + bottom_panel
+screen_height = 550 + bottom_panel
 
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Game')
@@ -57,6 +57,7 @@ class char_card:
 # game parameters
 t1, t2 = [], []
 init1, init2 = [], []
+start1, start2 = [], []
 queue = []
 c = []
 cc_team1 = []
@@ -88,8 +89,29 @@ while run:
         for i in range(0, 5):
             print(char_info2[i].Name, end=' ')
         scene = 5
+
     elif scene == 5:
+        print('\nSet position team1\n')
+        for i in range(0, 5):
+            print(char_info1[i].Name)
+            # start_point = int(input('start point: '))
+            start_point = i
+            char_info1[i].set_position([start_point, 0])
+            start1.append((start_point, 0))
+
+
+        print('\nSet position team2\n')
+        for i in range(0, 5):
+            print(char_info2[i].Name)
+            # start_point = int(input('start point: '))
+            start_point = i
+
+            char_info2[i].set_position([start_point, 9])
+            start2.append((start_point, 9))
         scene = 6
+        start_time = pygame.time.get_ticks()
+        angle = 0
+
     elif scene == 6:
         elapsed = pygame.time.get_ticks() - start_time
         screen.fill(0)

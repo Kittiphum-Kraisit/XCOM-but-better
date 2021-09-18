@@ -1,4 +1,5 @@
 import json
+import pygame
 
 f = open('module/characters.json', )
 data = json.load(f)
@@ -8,7 +9,9 @@ class Character:
     def __init__(self, name, HP, Mana, Sta, Atk_dam, Atk_ran, Skl_name, Skl_dam, Skl_ran, Cost, Spd, team):
         self.Name = name
         self.HP = HP
+        self.Max_HP = HP
         self.Mana = Mana
+        self.Max_Mana = Mana
         self.Movement = Sta
         self.Stamina = Sta
         self.Atk_damage = Atk_dam
@@ -21,6 +24,10 @@ class Character:
         self.Team = team
         self.Invisible = 0
         self.Shield = 0
+        # print('pic/Icon_' + str(name) + '.png')
+        path = f"pic/Icon/{name}.png"
+        #self.Icon = pygame.image.load(path)
+        self.Icon = pygame.image.load(path)
 
     def set_currspeed(self, initvalue):
         self.CurrSpeed = self.Speed + initvalue
