@@ -62,7 +62,7 @@ def movepic(position, cellsize, last_position, surface):
     surface.blit(catImg, (x+3, y+3))
     return (x+3, y+3)
 
-def check_pressed(table , ract_obj, cellsize, old_position):
+def check_pressed(table , ract_obj, cellsize, old_position, surface):
     # check if the mouse is pressed
     # parameter (2D array of grid class objects, 2D array of rect objects, tuple contain (width, and height) of one cell in table-
     # -, the tuple of pixel position of last image)
@@ -73,7 +73,7 @@ def check_pressed(table , ract_obj, cellsize, old_position):
         for i in range(len(ract_obj)):
             for l in range(len(ract_obj[i])):
                 if ract_obj[i][l].collidepoint(mousex, mousey):
-                    movepic((table[i][l].positionX, table[i][l].positionY), cellsize, old_position)
+                    movepic((table[i][l].positionX, table[i][l].positionY), cellsize, old_position, surface)
                     return (table[i][l].positionX, table[i][l].positionY)
 
 def makeclass(positions, cellsize):
