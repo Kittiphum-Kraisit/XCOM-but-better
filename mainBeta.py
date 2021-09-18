@@ -1,5 +1,6 @@
 import pygame
-from module.button import Button
+import random
+from module.button import Button, draw_text, draw_bg
 from module.Character import choose_char, obj_char_create
 from module.Scene import choose_character_in_pygame
 from module.function import *
@@ -43,20 +44,14 @@ class char_card:
 
     def draw_image(self):
         screen.blit(self.image, self.rect)
-        # info = obj_char_create(str(self.id),0)
-        # draw_text(info.Name, font, white, self.x - 50, self.y+40)
-        # draw_text(f'HP: {str(info.HP)}', font, white, self.x - 50, self.y + 60)
-        # draw_text(f'Mana: {str(info.Mana)}', font, white, self.x - 50, self.y + 80)
-        # draw_text(f'Skill: {info.Skill_name}', font, white, self.x - 50, self.y + 100)
-        # draw_text(f'AtkDmg: {str(info.Atk_damage)}', font, white, self.x - 50, self.y + 120)
 
     def draw_info(self):
         info = obj_char_create(str(self.id), 0)
-        draw_text(info.Name, font, white, self.x - 50, self.y + 40)
-        draw_text(f'HP: {str(info.HP)}', font, white, self.x - 50, self.y + 60)
-        draw_text(f'Mana: {str(info.Mana)}', font, white, self.x - 50, self.y + 80)
-        draw_text(f'Skill: {info.Skill_name}', font, white, self.x - 50, self.y + 100)
-        draw_text(f'AtkDmg: {str(info.Atk_damage)}', font, white, self.x - 50, self.y + 120)
+        draw_text(screen, info.Name, font, white, self.x - 50, self.y + 40)
+        draw_text(screen, f'HP: {str(info.HP)}', font, white, self.x - 50, self.y + 60)
+        draw_text(screen, f'Mana: {str(info.Mana)}', font, white, self.x - 50, self.y + 80)
+        draw_text(screen, f'Skill: {info.Skill_name}', font, white, self.x - 50, self.y + 100)
+        draw_text(screen, f'AtkDmg: {str(info.Atk_damage)}', font, white, self.x - 50, self.y + 120)
 
 
 # game parameters
@@ -77,9 +72,9 @@ scene = 1
 while run:
     screen.fill(0)
     if scene == 1:
-        draw_bg()
-        draw_text("Welcome", font, white, 350, 200)
-        draw_text("Click to start", font, white, 350, 250)
+        draw_bg(screen, background_img)
+        draw_text(screen, "Welcome", font, white, 350, 200)
+        draw_text(screen, "Click to start", font, white, 350, 250)
     elif scene == 2:
         scene = choose_character_in_pygame(c, screen, cc_team1, 2)
     elif scene == 3:
