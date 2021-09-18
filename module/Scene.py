@@ -4,13 +4,6 @@ from module.button import draw_bg, draw_text, Button
 from module.function import *
 # colors and fonts
 
-
-def rot_center(image, angle, x, y):
-    rotated_image = pygame.transform.rotate(image, angle)
-    new_rect = rotated_image.get_rect(center=image.get_rect(center=(x, y)).center)
-    return rotated_image, new_rect
-
-
 def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_number):
     #draw_bg(screen)
     font = pygame.font.SysFont('Times New Roman', 14)
@@ -39,6 +32,13 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
         draw_text(screen, "Next ->", bigger_font, red, 700, 475)
 
     return scene_number
+
+
+def blit_rotate(surf, image, topleft, angle):
+    rotated_image = pygame.transform.rotate(image, angle)
+    new_rect = rotated_image.get_rect(center = image.get_rect(topleft = topleft).center)
+    surf.blit(rotated_image, new_rect.topleft)
+
 
 # draw_bg()
 # draw_text("Player 1 Select character", font, white, 370, 0)
