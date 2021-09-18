@@ -167,11 +167,6 @@ while run:
                             c[i].available = not c[i].available
                         char_info2 = choose_char(cc_team2, 2)
                         print(char_info2)
-
-
-
-
-
         if event.type == pygame.QUIT:
             run = False
     pygame.display.update()
