@@ -20,6 +20,7 @@ class grid():
         self.rect = pygame.Rect(self.positionX, self.positionY, diX, diY)
         self.resident = None
 
+
     def drawcell(self, surface):
         color2 = pygame.Color(255, 255, 255)
         pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.rangeX, self.positionY), 5)
@@ -137,7 +138,6 @@ def drawqueue(table, top_left, bottom_right, surface):
     for l in range(len(row)):
         row[l].drawcell(surface)
     return row
-
 
 
 if __name__ == "__main__":
