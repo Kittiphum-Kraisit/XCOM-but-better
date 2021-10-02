@@ -1,4 +1,5 @@
-import random as r
+import math
+import random
 
 
 def attack_range_check(char_atk, char_def_list):
@@ -8,6 +9,51 @@ def attack_range_check(char_atk, char_def_list):
         if check <= char_atk.Atk_range and enemy.Invisible == 0:
             char_enemy.append(enemy)
     return char_enemy
+# obstacle: obstacle + allies as positions in tuple
+def los(char_atk, char_list, table):
+    enemies = []
+    obstacles = []
+    for unit in char_list:
+        check = range_check(char_atk, unit)
+        if check <= char_atk.Atk_range and unit.Invisible == 0 and unit.Team != char_atk.Team:
+            enemies.append(unit)
+            obstacles.append((unit.Position[1], unit.Position[0]))
+        elif check <= char_atk.Atk_range and unit.Team == char_atk.Team and unit.Name != char_atk.Name:
+            obstacles.append((unit.Position[1], unit.Position[0]))
+    for y in range(len(table)):
+        for x in range(len(table[y])):
+            ran = abs(char_atk.Position[0] - table[y][x].indexX) + abs(char_atk.Position[1] - table[y][x].indexY)
+            if ran <= char_atk.Atk_range and table[y][x].obstacle == True:
+                obstacles.append((y, x))
+    print("1st", obstacles)
+    for i in enemies:
+        print("2nd", i)
+    return line_of_sight(char_atk, enemies, obstacles)
+
+def line_of_sight(char, enemies, obstacles):
+    # y = (y1-y0/(x1-x0))*(x-x0) + y0
+    y0, x0 = char.Position
+    attackable = enemies.copy()
+    print("3rd", obstacles)
+    varx = 0
+    for enemy in enemies:
+        print("rounds",varx)
+        varx += 1
+        y1, x1 = enemy.Position
+        for x in range(x0, x1):
+            y = round(((y1-y0)/(x1-x0))*(x-x0) + y0)
+            if (x, y) in obstacles:
+                print("removed", x, y)
+                attackable.remove(enemy)
+                break
+        continue
+    for i in attackable:
+        print(i.Name)
+    return attackable
+
+
+
+
 
 
 def skill_range_check(caster,char_list):
@@ -24,7 +70,7 @@ def attack(char_atk, char_def):
     if check <= char_atk.Atk_range:
         if check_shield(char_def):
             char_def.Shield -= char_atk.Atk_damage
-            if char_def.shield < 0:
+            if char_def.Shield < 0:
                 char_def.HP += char_def.Shield
                 char_def.Shield = 0
         elif char_def.Name == 'Dancer':
@@ -37,24 +83,37 @@ def attack(char_atk, char_def):
         return False
 
 
+def charmove(char, new_index, old_index, table, surface):
+    check = pos_check(char, new_index)
+    if check <= char.Stamina:
+        x, y = new_index
+        x1, y1 = old_index
+        char.position = (x, y)
+        table[x1][y1].resident = None
+        table[x][y].resident = char
+        table[x][y].addpic(char.Icon, surface, (x, y), char.Team)
+
 def move(char, destination, board):
     check = pos_check(char, destination)
     if check <= char.Stamina:
-        if board[destination[0]][destination[1]] == '':
-            char.Stamina -= check
-            return True
-        if board[destination[0]][destination[1]] == 't':
-            char.HP -= 50
-            char.Stamina -= check
-            return True
+        char.Stamina -= check
+        # if board[destination[0]][destination[1]] == '':
+        #     char.Stamina -= check
+        #     return True
+        # if board[destination[0]][destination[1]] == 't':
+        #     char.HP -= 50
+        #     char.Stamina -= check
+        #     return True
+
+        return True
     return False
 
 
-def check_death(char, team):
+def check_death(char):
     if char.HP <= 0:
-        return team.remove(char)
+        return True
     elif char.HP > 0:
-        return team
+        return False
 
 
 def range_check(char1, char2):
@@ -120,7 +179,7 @@ def critical_shot(char_atk, char_def):
 
 
 def nimble(char):
-  chance = r.randint(0, 100)
+  chance = random.randint(0, 100)
   if chance > char.Skill_damage:
     return False
   else:
@@ -129,27 +188,15 @@ def nimble(char):
 
 # Sheriff
 def high_noon(char_atk, char_def_list):
-    print('choose 6 targets')
+    print('random 6 targets')
     for i in range(6):
-        for j in range(0,len(char_def_list)):
-            print(str(j) + ':' + str(char_def_list[j].Name))
-        if i+1 == 1:
-            x = 'st'
-        elif i+1 == 2:
-            x = 'nd'
-        elif i+1 == 3:
-            x = 'rd'
-        else:
-            x = 'th'
-        print('choose '+ str(i+1) + x + ' target')
-        target = char_def_list[int(input())]
+        target = char_def_list[random.randint(0, len(char_def_list)-1)]
         if shield_skill(char_atk, target):
             target.HP -= char_atk.Skill_damage
         elif target.Name == 'Dancer':
           if nimble(target) == False:
             target.HP -= char_atk.Skill_damage
         print(target.HP)
-        check_death(char_def_list[i], char_def_list)
     mana_reduce(char_atk)
 
 
