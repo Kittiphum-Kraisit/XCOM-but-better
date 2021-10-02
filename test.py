@@ -26,6 +26,7 @@ while done:
     elapsed = pygame.time.get_ticks() - start_time
     if elapsed <= 3000:
         screen.fill(0)
+        pygame.draw.rect(screen, [255,0,0], pygame.Rect((120, 80), (50, 500)), 1)
         blitRotate2(screen, image, (175,200), angle)
         angle += 1
         pygame.display.flip()

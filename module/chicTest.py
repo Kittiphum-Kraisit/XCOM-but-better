@@ -19,6 +19,8 @@ class grid():
         self.indexY = indY
         self.rect = pygame.Rect(self.positionX, self.positionY, diX, diY)
         self.resident = None
+        self.checked = None
+        self.obstacle = False
 
 
     def drawcell(self, surface):
@@ -28,7 +30,7 @@ class grid():
         pygame.draw.line(surface, color2, (self.rangeX, self.positionY), (self.rangeX, self.rangeY), 5)
         pygame.draw.line(surface, color2, (self.positionX, self.rangeY), (self.rangeX, self.rangeY), 5)
 
-    def addpic(self,picname, surface, index, team):
+    def addpic(self, picname, surface, index, team):
         # create new image on input position
         # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell)
         x, y = index
@@ -48,37 +50,72 @@ class grid():
     def movepic(self, position, cellsize, last_position, surface):
         # create new image on input position and create black layer over last image
         # parameter (a tuple of (x,y) pixel position of where you want new image to be, tuple contain (width, and height) of one cell-
-        # -, the tuple of pixel position of last image)
         x, y = position
         x1, y1 = last_position
         sizeX, sizeY = cellsize
         black = pygame.image.load('../pic/black.jpg')
         black = pygame.transform.scale(black, (math.floor(sizeX-4.5), math.floor(sizeY-4.5)))
-        # print(last_position)
         surface.blit(black, (x1+3, y1+3))
         catImg = pygame.image.load('../pic/pop-cat.png')
         catImg = pygame.transform.scale(catImg, (math.floor(sizeX-4.5), math.floor(sizeY-4.5)))
         surface.blit(catImg, (x+3, y+3))
         return (x+3, y+3)
 
-    # def check_pressed(self, mousex, mousey):
-    #     # check if the mouse is pressed
-    #     # parameter (2D array of grid class objects, 2D array of rect objects, tuple contain (width, and height) of one cell in table-
-    #     # -, the tuple of pixel position of last image)
-    #     # mousex, mousey = pygame.mouse.get_pos()
-    #     # click = pygame.mouse.get_pressed()
-    #     #
-    #     # if click != (0, 0, 0):
-    #     if self.rect.collidepoint(mousex, mousey):
-    #         return (self.indexX, self.indexY)
-# def makeract(table, cellsize):
-#     # create rectangle object to use as hitbox for table
-#     # parameter (2D array of grid class objects, tuple contain (width, and height) of one cell in table)
-#     lenX, lenY = cellsize
-#     for i in range(len(table)):
-#         for l in range(len(table[i])):
-#             box = pygame.Rect(table[i][l].positionX, table[i][l].positionY, lenX, lenY)
-#             table[i][l].addrect(box)
+    def highlight(self, surface, color):
+        sc = pygame.Surface((math.floor(self.rect.width - 4.5), math.floor(self.rect.height - 4.5)))
+        sc.fill(color)
+        surface.blit(sc, (self.positionX + 3, self.positionY + 3))
+
+# draw icon at pos
+
+
+
+# def charmove(char, new_index, old_index, table, surface):
+#     x, y = new_index
+#     x1, y1 = old_index
+#     char.position = (x, y)
+#     table[x1][y1].resident = None
+#     table[x][y].resident = char
+#     table[x][y].addpic(char.Icon, surface, (x, y), char[i].Team)
+def fillflush(x, y, range, table, surface, arr):
+    # x, y = position
+    if table[y][x].resident == None:
+        table[y][x].highlight(surface, (128, 0, 0, 50))
+        arr.append((y, x))
+    if range <= 0:
+        return y, x
+    # if x + 1 < len(table) and y + 1 < len(table[0]) and x - 1 > 0 and y - 1 > 0:
+    if y + 1 < len(table) and table[y+1][x].resident is None:
+        fillflush(x, y+1, range-1, table, surface, arr)
+    if x + 1 < len(table[0]) and table[y][x+1].resident is None:
+        fillflush(x+1, y, range-1, table, surface, arr)
+    if y - 1 >= 0 and table[y-1][x].resident is None:
+        fillflush(x, y-1, range-1, table, surface, arr)
+    if x - 1 >= 0 and table[y][x-1].resident is None:
+        fillflush(x-1, y, range-1, table, surface, arr)
+    return arr
+
+
+def setrange(char, table, surface, type):
+    if type == "move":
+        for y in range(len(table)):
+            for x in range(len(table[y])):
+                ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
+                if ran <= char.Stamina and table[x][y].resident == None:
+                    table[x][y].highlight(surface, (128, 0, 0, 50))
+    elif type == "attack":
+        for y in range(len(table)):
+            for x in range(len(table[y])):
+                ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
+                if ran <= char.Atk_range and table[x][y].resident == None:
+                    table[x][y].highlight(surface, (255, 192, 203, 50))
+    elif type == "skill":
+        for y in range(len(table)):
+            for x in range(len(table[y])):
+                ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
+                if ran <= char.Skill_range and table[x][y].resident == None:
+                    table[x][y].highlight(surface, (153, 204, 255, 50))
+
 
 def charsetup(charlist, surface, table):
     for i in range(len(charlist)):
@@ -90,31 +127,15 @@ def queuesetup(queue, surface, queuetable):
     for i in range(len(queue)):
         queuetable[i][0].addpic(queue[i].Icon, surface, (i, 0), queue[i].Team)
 
-# def makeclass(positions, cellsize):
-#     # create grid class object to collect position, dimension, index in single object
-#     # parameter (2D array of tuples contain pixel position (x,y) of each cell, tuple contain (width, and height) of one cell in table)
-#     obj = []
-#     for i in range(len(positions)):
-#         row = []
-#         for l in range(len(positions[i])):
-#             row.append(grid(positions[i][l], cellsize, (i, l)))
-#         obj.append(row)
-#     return obj
-
 def drawtable(tableX, tableY, top_left, bottom_right, surface):
     # draw the table on the display surface
     # parameter (the number of cell you want in each direction, pixel position of top_left of table, pixel position of bottom_right of table)
-    # color2 = pygame.Color(255, 255, 255)
     big_table = []
     row = []
     tl_x, tl_y = top_left
     br_x, br_y = bottom_right
-    # for i in range(table+1):
-    #     pygame.draw.line(surface, color2, (tl_x, tl_y + (i * (abs(tl_y-br_y)/table))), (br_x, tl_y + (i * (abs(tl_y-br_y)/table))), 5)
-    #     pygame.draw.line(surface, color2, (tl_x + (i * (abs(tl_x-br_x)/table)), tl_y), (tl_x + (i * (abs(tl_x-br_x)/table)), br_y), 5)
     for i in range(tableX):
         for l in range(tableY):
-            # row.append([tl_x + (l * (abs(tl_x-br_x)/table)), tl_y + (i * (abs(tl_y-br_y)/table))])
             row.append(grid((tl_x + (i * (abs(tl_x-br_x)/tableX)), tl_y + (l * (abs(tl_y-br_y)/tableY))), (abs(tl_x-br_x)/tableX, abs(tl_y-br_y)/tableY), (i, l)))
         big_table.append(row)
         row = []
@@ -126,18 +147,51 @@ def drawtable(tableX, tableY, top_left, bottom_right, surface):
 def drawqueue(table, top_left, bottom_right, surface):
     # draw the table on the display surface
     # parameter (the number of cell you want in each direction, pixel position of top_left of table, pixel position of bottom_right of table)
-    # color2 = pygame.Color(255, 255, 255)
     row = []
     tl_x, tl_y = top_left
     br_x, br_y = bottom_right
-    # for i in range(table+1):
-    #     pygame.draw.line(surface, color2, (tl_x, tl_y + (i * (abs(tl_y-br_y)/table))), (br_x, tl_y + (i * (abs(tl_y-br_y)/table))), 5)
-    #     pygame.draw.line(surface, color2, (tl_x + (i * (abs(tl_x-br_x)/table)), tl_y), (tl_x + (i * (abs(tl_x-br_x)/table)), br_y), 5)
     for i in range(table):
         row.append(grid((tl_x + (i * (abs(tl_x-br_x)/table)), tl_y), (abs(tl_x-br_x)/table, abs(br_y-tl_y)), (0, i)))
     for l in range(len(row)):
         row[l].drawcell(surface)
     return row
+
+def findedge(x, y, range, table, surface, arr):
+    # x, y = position
+    table[y][x].checked = "1"
+    if range <= 0:
+        arr.append((y, x))
+        return y, x
+    # if x + 1 < len(table) and y + 1 < len(table[0]) and x - 1 > 0 and y - 1 > 0:
+    if y + 1 < len(table) and table[y+1][x].checked == None:
+        findedge(x, y+1, range-1, table, surface, arr)
+    if x + 1 < len(table[0]) and table[y][x+1].checked == None:
+        findedge(x+1, y, range-1, table, surface, arr)
+    if y - 1 >= 0  and table[y-1][x].checked == None:
+        findedge(x, y-1, range-1, table, surface, arr)
+    if x - 1 >= 0 and table[y][x-1].checked == None:
+        findedge(x-1, y, range-1, table, surface, arr)
+    return arr
+
+def arrow(x, y, table, target, surface, result_arr):
+    tarX, tarY = target
+    if table[y][x].resident is None:
+        table[y][x].highlight(surface, (128, 0, 0, 50))
+        result_arr.append((y, x))
+    if table[y][x].resident == "obstacle":
+        return 0
+    if table[y][x].resident != None and table[y][x].resident != "obstacle":
+        result_arr.append((y, x))
+        return 0
+    if tarX > x:
+        arrow(x+1, y, table, target, surface, result_arr)
+    elif tarX < x:
+        arrow(x-1, y, table, target, surface, result_arr)
+    if tarY > y:
+        arrow(x, y+1, table, target, surface, result_arr)
+    elif tarY < y:
+        arrow(x, y-1, table, target, surface, result_arr)
+    return result_arr
 
 
 if __name__ == "__main__":
@@ -146,14 +200,10 @@ if __name__ == "__main__":
     color2 = pygame.Color(255, 255, 255)  # White
     x = 1
     y = 4
-    # cell = grid((120, 50), (100, 25), (0, 0))
-    # cell.drawcell(DISPLAYSURF)
     a = drawtable(10, (120, 50), (620, 505), DISPLAYSURF)
     for i in range(len(a)):
         for l in range(len(a[i])):
             a[i][l].drawcell(DISPLAYSURF)
-    # makeract(table_obj, cellsize)
-    # oldposition = grid.addpic(a[x][y], cellsize, "../pic/pop-cat.png", DISPLAYSURF)
 
     while True:
         pygame.display.update()
@@ -161,7 +211,6 @@ if __name__ == "__main__":
         click = pygame.mouse.get_pressed()
         if click != (0, 0, 0):
             mousex, mousey = pygame.mouse.get_pos()
-            # print(mousex, mousey)
             for i in range(len(a)):
                 for l in range(len(a[i])):
                     a[i][l].check_pressed(mousex, mousey)

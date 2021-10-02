@@ -10,14 +10,18 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
     bigger_font = pygame.font.SysFont('Times New Roman', 24)
     white = (255, 255, 255)
     red = (255, 0, 0)
-    green = (0, 255, 0)
-    Next_butt = Button(screen, 700, 475, 80, 30)
+    blue = (0, 0, 255)
+    if scene_number == 2:
+        color = red
+    else:
+        color = blue
+    Next_butt = Button(screen, 650, 650, 80, 30,(196,196,196))
     draw_text(screen, "Player " + str(scene_number-1) + " Select character", font, white, 370, 0)
     for i in range(10):
         if all_character_list[i].available:
             all_character_list[i].draw_image()
         elif not all_character_list[i].available:
-            pygame.draw.rect(screen, (196, 196, 196, 25), all_character_list[i].rect)
+            pygame.draw.rect(screen, color, all_character_list[i].rect, 2)
             all_character_list[i].draw_image()
         all_character_list[i].draw_info()
     if len(list_of_team) == 5:
@@ -29,14 +33,14 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
             print("Succ")
             return scene_number + 1
 
-        draw_text(screen, "Next ->", bigger_font, red, 700, 475)
+        draw_text(screen, "Next ->", bigger_font, red, 650, 650)
 
     return scene_number
 
 
 def blit_rotate(surf, image, topleft, angle):
     rotated_image = pygame.transform.rotate(image, angle)
-    new_rect = rotated_image.get_rect(center = image.get_rect(topleft = topleft).center)
+    new_rect = rotated_image.get_rect(center=image.get_rect(topleft=topleft).center)
     surf.blit(rotated_image, new_rect.topleft)
 
 
