@@ -4,6 +4,7 @@ from pygame.locals import *
 import sys
 import math
 
+
 class grid():
     def __init__(self, position, dimension, index):
         indX, indY = index
@@ -17,6 +18,7 @@ class grid():
         self.rangeY = posy + diY
         self.indexX = indX
         self.indexY = indY
+
 
 def drawtable(table, top_left, bottom_right):
     big_table = []
@@ -33,12 +35,14 @@ def drawtable(table, top_left, bottom_right):
         row = []
     return big_table, (abs(tl_x-br_x)/table, abs(tl_y-br_y)/table)
 
+
 def addpic(position, cellsize):
     x, y = position
     sizeX, sizeY = cellsize
     catImg = pygame.image.load('../pic/pop-cat.png')
     catImg = pygame.transform.scale(catImg, (math.floor(sizeX), math.floor(sizeY)))
     DISPLAYSURF.blit(catImg, (x, y))
+
 
 def check_pressed():
     mousex, mousey = pygame.mouse.get_pos()
@@ -48,9 +52,11 @@ def check_pressed():
         print(mousex)
         print(mousey)
 
+
 def makeclass(positions, cellsize):
     obj = []
     obj.append(grid())
+
 
 pygame.init()
 DISPLAYSURF = pygame.display.set_mode((720, 720))

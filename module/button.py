@@ -1,5 +1,6 @@
 import pygame 
 
+
 # button class
 class Button():
 	def __init__(self, surface, x, y, size_x, size_y, color):
@@ -28,20 +29,20 @@ class Button():
 		sc = pygame.Surface((self.rect.width, self.rect.height))
 		sc.fill(self.color)
 		sc.set_alpha(255)
-		#draw button
+		# draw button
 		self.surface.blit(sc, (self.x, self.y))
 
 		return action
 
-
+# draw text on screen
 def draw_text(surface, text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	surface.blit(img, (x, y))
 
-
+# draw button on screen
 def draw_img(surface, image, position):
 	surface.blit(image, position)
 
-
+# draw background of the screen
 def draw_bg(surface, background_img):
 	surface.blit(background_img, (0, 0))
