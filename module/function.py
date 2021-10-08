@@ -2,6 +2,7 @@ import math
 import random
 
 
+# check the attack range
 def attack_range_check(char_atk, char_def_list):
     char_enemy = []
     for enemy in char_def_list:
@@ -9,8 +10,12 @@ def attack_range_check(char_atk, char_def_list):
         if check <= char_atk.Atk_range and enemy.Invisible == 0:
             char_enemy.append(enemy)
     return char_enemy
+
 # obstacle: obstacle + allies as positions in tuple
-def los(char_atk, char_list, table):
+
+
+# get target in attack/skill range
+def LoS(char_atk, char_list, table):
     enemies = []
     obstacles = []
     for unit in char_list:
@@ -30,8 +35,10 @@ def los(char_atk, char_list, table):
         print("2nd", i)
     return line_of_sight(char_atk, enemies, obstacles)
 
+
+# check if the enemies in in the sight or not
 def line_of_sight(char, enemies, obstacles):
-    # y = (y1-y0/(x1-x0))*(x-x0) + y0
+    # Formula: y = (y1-y0/(x1-x0))*(x-x0) + y0
     y0, x0 = char.Position
     attackable = enemies.copy()
     print("3rd", obstacles)
@@ -52,10 +59,7 @@ def line_of_sight(char, enemies, obstacles):
     return attackable
 
 
-
-
-
-
+# check the skill range
 def skill_range_check(caster,char_list):
     char_inrange = []
     for char in char_list:
@@ -65,6 +69,7 @@ def skill_range_check(caster,char_list):
     return char_inrange
 
 
+# reduce shield or hp
 def attack(char_atk, char_def):
     check = range_check(char_atk, char_def)
     if check <= char_atk.Atk_range:
@@ -74,8 +79,8 @@ def attack(char_atk, char_def):
                 char_def.HP += char_def.Shield
                 char_def.Shield = 0
         elif char_def.Name == 'Dancer':
-          if nimble(char_def) == False:
-            char_def.HP -= char_atk.Atk_damage
+            if nimble(char_def) is False:
+                char_def.HP -= char_atk.Atk_damage
         else:
             char_def.HP -= char_atk.Atk_damage
         return True
@@ -83,6 +88,7 @@ def attack(char_atk, char_def):
         return False
 
 
+# move the characters
 def charmove(char, new_index, old_index, table, surface):
     check = pos_check(char, new_index)
     if check <= char.Stamina:
@@ -93,22 +99,17 @@ def charmove(char, new_index, old_index, table, surface):
         table[x][y].resident = char
         table[x][y].addpic(char.Icon, surface, (x, y), char.Team)
 
+
+# check stamina
 def move(char, destination, board):
     check = pos_check(char, destination)
     if check <= char.Stamina:
         char.Stamina -= check
-        # if board[destination[0]][destination[1]] == '':
-        #     char.Stamina -= check
-        #     return True
-        # if board[destination[0]][destination[1]] == 't':
-        #     char.HP -= 50
-        #     char.Stamina -= check
-        #     return True
-
         return True
     return False
 
 
+# check death
 def check_death(char):
     if char.HP <= 0:
         return True
@@ -116,31 +117,34 @@ def check_death(char):
         return False
 
 
+# check range of the character to character
 def range_check(char1, char2):
     ran = abs(char1.Position[0] - char2.Position[0]) + abs(char1.Position[1] - char2.Position[1])
     return ran
 
 
+# check range of the character to destination
 def pos_check(char, destination):
     ran = abs(char.Position[0] - destination[0]) + abs(char.Position[1] - destination[1])
     return ran
 
 
+# check the mana
 def mana_check(char):
     if char.Mana >= char.Cost:
         return True
     else:
         print("Not enought mana!")
         return False
-        
-        
+
+
+# reduce mana
 def mana_reduce(char):
     char.Mana -= char.Cost
 
-#skills
 
-
-# Battlemage
+# Skills
+# Battlemage skill
 def warp_to_tile(char, destination):
     check = pos_check(char, destination)
     if check <= char.Skill_range:
@@ -150,7 +154,7 @@ def warp_to_tile(char, destination):
         return False
 
 
-# Granadier
+# Granadier skill
 def under_barrel(char_atk, char_def):
     check = range_check(char_atk, char_def)
     if check <= char_atk.Skill_range:
@@ -164,7 +168,7 @@ def under_barrel(char_atk, char_def):
         return False
 
 
-# Marksman
+# Marksman skill
 def critical_shot(char_atk, char_def):
     check = range_check(char_atk, char_def)
     if check <= char_atk.Skill_range:
@@ -178,6 +182,7 @@ def critical_shot(char_atk, char_def):
         return False
 
 
+# Dancer skill
 def nimble(char):
   chance = random.randint(0, 100)
   if chance > char.Skill_damage:
@@ -186,7 +191,7 @@ def nimble(char):
     return True
 
 
-# Sheriff
+# Sheriff skill
 def high_noon(char_atk, char_def_list):
     print('random 6 targets')
     for i in range(6):
@@ -200,7 +205,7 @@ def high_noon(char_atk, char_def_list):
     mana_reduce(char_atk)
 
 
-# Flagellants
+# Flagellants skill
 def salvation(char_atk, char_def, current_ally):
     death = 5 - current_ally
     check = range_check(char_atk, char_def)
@@ -216,7 +221,7 @@ def salvation(char_atk, char_def, current_ally):
         return False
 
 
-# Hospitalier
+# Hospital skill
 def heal(healer, patient):
     patient.HP += healer.Skill_damage
     mana_reduce(healer)
@@ -231,16 +236,18 @@ def reset_stamina(chars):
 
 # Shield
 def shield(char):
-  char.Shield = char.Skill_damage
-  mana_reduce(char)
+    char.Shield = char.Skill_damage
+    mana_reduce(char)
 
 
+# check if there is a shield
 def check_shield(char):
     if char.Shield > 0:
         return True
     return False
 
 
+# Battlemage skill
 def shield_skill(char_atk, char_def, dmg = 0):
     if check_shield(char_def):
         if dmg != 0:
@@ -254,7 +261,7 @@ def shield_skill(char_atk, char_def, dmg = 0):
     return True
 
 
- # Trapper
+# Trapper skill
 def trap(char, place):
     check = pos_check(char, place)
     if check <= char.Skill_range:

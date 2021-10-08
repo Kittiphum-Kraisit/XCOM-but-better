@@ -4,8 +4,8 @@ from module.button import draw_bg, draw_text, Button
 from module.function import *
 # colors and fonts
 
+# a function to choose characters for each player
 def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_number):
-    #draw_bg(screen)
     font = pygame.font.SysFont('Times New Roman', 14)
     bigger_font = pygame.font.SysFont('Times New Roman', 24)
     white = (255, 255, 255)
@@ -37,43 +37,8 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
 
     return scene_number
 
-
+# a function to rotate an image in place (for the dice)
 def blit_rotate(surf, image, topleft, angle):
     rotated_image = pygame.transform.rotate(image, angle)
     new_rect = rotated_image.get_rect(center=image.get_rect(topleft=topleft).center)
     surf.blit(rotated_image, new_rect.topleft)
-
-
-# draw_bg()
-# draw_text("Player 1 Select character", font, white, 370, 0)
-# for i in range(10):
-#     if c[i].available:
-#         c[i].draw_image()
-#     elif not c[i].available:
-#         pygame.draw.rect(screen, (196, 196, 196, 25), c[i].rect)
-#         c[i].draw_image()
-#     c[i].draw_info()
-# if len(cc_team1) == 5:
-#     #Draw button next
-#     draw_text("Next ->", bigger_font, red, 700, 475)
-#     if Next_butt.draw():
-#         for i in range(10):
-#             c[i].available = True
-#         print("Succ")
-#         scene = 3
-
-# draw_bg(screen, background_img)
-# draw_text(screen, "Player 2 Select character", font, white, 370, 0)
-# for i in range(10):
-#     if c[i].available:
-#         c[i].draw_image()
-#     elif not c[i].available:
-#         pygame.draw.rect(screen, (196, 196, 196, 25), c[i].rect)
-#         c[i].draw_image()
-#     c[i].draw_info()
-#     if len(cc_team2) == 5:
-#     # Draw button next
-#         draw_text(screen, "Next ->", bigger_font, red, 700, 475)
-#         if Next_butt.draw():
-#             print("Succ")
-#             scene = 4

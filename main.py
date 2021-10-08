@@ -3,7 +3,7 @@ from module.Character import choose_char
 from module.function import *
 from module.chicTest import *
 
-#start pygame
+# start pygame
 pygame.init()
 DISPLAYSURF = pygame.display.set_mode((720, 720))
 clock = pygame.time.Clock()
@@ -27,7 +27,7 @@ queue = []
 
 board = [['' for i in range(10)] for j in range(10)]
 
-#Select characters
+# Select characters
 # team 1
 print(Select_characters)
 print('Team1 choose characters: ')
@@ -45,7 +45,7 @@ for i in range(0,5):
 char_info1 = choose_char(t1,1)
 char_info2 = choose_char(t2,2)
 
-#preview
+# preview
 print('\nTeam 1: ', end ='')
 for i in range(0,5):
     print(char_info1[i].Name, end =' ')
@@ -53,7 +53,7 @@ print('\nTeam 2: ', end ='')
 for i in range(0,5):
     print(char_info2[i].Name, end =' ')
 
-#set start position
+# set start position
 print('\nSet position team1\n')
 for i in range(0,5):
     print(char_info1[i].Name)
@@ -68,7 +68,7 @@ for i in range(0,5):
     char_info2[i].set_position([start_point,9])
     board[start_point][9] = char_info2[i]
 
-#pygame display
+# pygame display
 
 color2 = pygame.Color(255, 255, 255)  # White
 a, cellsize = drawtable(10, (120, 50), (620, 505), DISPLAYSURF)
@@ -93,35 +93,35 @@ for i in char_info2:
 
 
 # game start
-while( len(char_info1) != 0 and len(char_info2) != 0):
+while len(char_info1) is not 0 and len(char_info2) is not 0:
 
 
 
-    #pygame update
+    # pygame update
     pygame.display.update()
     clock.tick(fps)
 
     pygame.event.get()
-    #roll initiative
+    # roll initiative
     init1.clear()
     init2.clear()
     queue.clear()
     print('\nTeam1 roll')
     for i in range(0,len(char_info1)):
-        #_ = input()
+        # _ = input()
         init1.append(random.randint(0,100))
         print(char_info1[i].Name + ":" + str(init1[-1]))
 
     
     print('\nTeam2 roll')
     for i in range(0,len(char_info2)):
-        #_ = input()
+        # _ = input()
         init2.append(random.randint(0,100))
         print(char_info2[i].Name + ":" + str(init2[-1]))
 
         
-    #plus 10 mana to all unit
-    #plus init to character speed
+    # plus 10 mana to all unit
+    # plus init to character speed
     for i in range(0,len(char_info1)):
         char_info1[i].Mana += 10 
         
@@ -147,7 +147,7 @@ while( len(char_info1) != 0 and len(char_info2) != 0):
         char_info2[i].set_currspeed(init2[i])
         queue.append(char_info2[i])
     
-    #sort
+    # sort
     queue.sort(key = lambda x : x.CurrSpeed, reverse = True)
     reset_stamina(queue)
 
@@ -179,12 +179,12 @@ while( len(char_info1) != 0 and len(char_info2) != 0):
             action = int(input())
 
             if action == 0:
-                #endturn
+                # endturn
                 executed = True
                 break
     
             elif action == 1:
-                #attack
+                # attack
                 if(int(char.Team)==1):
                     targets = attack_range_check(char,char_info2)
                     check = char_info2
@@ -206,7 +206,7 @@ while( len(char_info1) != 0 and len(char_info2) != 0):
                     print('No target in range')
 
             elif action == 2:
-                #skill
+                # skill
                 if mana_check(char):
                     if char.Name == "Hospitallier":
 
@@ -277,7 +277,7 @@ while( len(char_info1) != 0 and len(char_info2) != 0):
                             print('No target in range')
 
             elif action == 3:
-                #move
+                # move
                 print('Current position: '+str(char.Position))
                 print('Movement: ' + str(char.Stamina))
                 x = int(input('x: '))
@@ -312,6 +312,6 @@ while( len(char_info1) != 0 and len(char_info2) != 0):
 
     
 
-    #queue 
+    # queue
 
 print('the end')

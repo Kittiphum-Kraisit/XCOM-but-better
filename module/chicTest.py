@@ -22,8 +22,8 @@ class grid():
         self.checked = None
         self.obstacle = False
 
-
     def drawcell(self, surface):
+        # draw a cell on surface
         color2 = pygame.Color(255, 255, 255)
         pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.rangeX, self.positionY), 5)
         pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.positionX, self.rangeY), 5)
@@ -66,17 +66,7 @@ class grid():
         sc.fill(color)
         surface.blit(sc, (self.positionX + 3, self.positionY + 3))
 
-# draw icon at pos
 
-
-
-# def charmove(char, new_index, old_index, table, surface):
-#     x, y = new_index
-#     x1, y1 = old_index
-#     char.position = (x, y)
-#     table[x1][y1].resident = None
-#     table[x][y].resident = char
-#     table[x][y].addpic(char.Icon, surface, (x, y), char[i].Team)
 def fillflush(x, y, range, table, surface, arr):
     # x, y = position
     if table[y][x].resident == None:
@@ -123,9 +113,11 @@ def charsetup(charlist, surface, table):
         table[x][y].resident = charlist[i]
         table[x][y].addpic(charlist[i].Icon, surface, (x, y), charlist[i].Team)
 
+
 def queuesetup(queue, surface, queuetable):
     for i in range(len(queue)):
         queuetable[i][0].addpic(queue[i].Icon, surface, (i, 0), queue[i].Team)
+
 
 def drawtable(tableX, tableY, top_left, bottom_right, surface):
     # draw the table on the display surface
@@ -144,6 +136,7 @@ def drawtable(tableX, tableY, top_left, bottom_right, surface):
             big_table[i][l].drawcell(surface)
     return big_table
 
+
 def drawqueue(table, top_left, bottom_right, surface):
     # draw the table on the display surface
     # parameter (the number of cell you want in each direction, pixel position of top_left of table, pixel position of bottom_right of table)
@@ -155,43 +148,6 @@ def drawqueue(table, top_left, bottom_right, surface):
     for l in range(len(row)):
         row[l].drawcell(surface)
     return row
-
-def findedge(x, y, range, table, surface, arr):
-    # x, y = position
-    table[y][x].checked = "1"
-    if range <= 0:
-        arr.append((y, x))
-        return y, x
-    # if x + 1 < len(table) and y + 1 < len(table[0]) and x - 1 > 0 and y - 1 > 0:
-    if y + 1 < len(table) and table[y+1][x].checked == None:
-        findedge(x, y+1, range-1, table, surface, arr)
-    if x + 1 < len(table[0]) and table[y][x+1].checked == None:
-        findedge(x+1, y, range-1, table, surface, arr)
-    if y - 1 >= 0  and table[y-1][x].checked == None:
-        findedge(x, y-1, range-1, table, surface, arr)
-    if x - 1 >= 0 and table[y][x-1].checked == None:
-        findedge(x-1, y, range-1, table, surface, arr)
-    return arr
-
-def arrow(x, y, table, target, surface, result_arr):
-    tarX, tarY = target
-    if table[y][x].resident is None:
-        table[y][x].highlight(surface, (128, 0, 0, 50))
-        result_arr.append((y, x))
-    if table[y][x].resident == "obstacle":
-        return 0
-    if table[y][x].resident != None and table[y][x].resident != "obstacle":
-        result_arr.append((y, x))
-        return 0
-    if tarX > x:
-        arrow(x+1, y, table, target, surface, result_arr)
-    elif tarX < x:
-        arrow(x-1, y, table, target, surface, result_arr)
-    if tarY > y:
-        arrow(x, y+1, table, target, surface, result_arr)
-    elif tarY < y:
-        arrow(x, y-1, table, target, surface, result_arr)
-    return result_arr
 
 
 if __name__ == "__main__":
@@ -214,7 +170,7 @@ if __name__ == "__main__":
             for i in range(len(a)):
                 for l in range(len(a[i])):
                     a[i][l].check_pressed(mousex, mousey)
-        if new_pos != None:
+        if new_pos is not None:
             print(new_pos)
             oldposition = new_pos
         for event in pygame.event.get():
