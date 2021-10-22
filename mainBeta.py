@@ -262,7 +262,6 @@ while run:
                 start_time = pygame.time.get_ticks()
                 angle = 0
 
-
         # Action Buttons setting
         Atk_button = Button(screen, 500, 550, 100, 50)
         if not attacked:

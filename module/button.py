@@ -29,9 +29,9 @@ class Button():
 		sc = pygame.Surface((self.rect.width, self.rect.height))
 		if self.color is not None:
 			sc.fill(self.color)
+			self.surface.blit(sc, (self.x, self.y))
 		sc.set_alpha(255)
 		# draw button
-		self.surface.blit(sc, (self.x, self.y))
 
 		return action
 
