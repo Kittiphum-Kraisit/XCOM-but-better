@@ -61,12 +61,12 @@ def line_of_sight(char, enemies, obstacles):
 
 # check the skill range
 def skill_range_check(caster,char_list):
-    char_inrange = []
+    char_in_range = []
     for char in char_list:
         check = range_check(char, caster)
         if check <= caster.Skill_range:
-            char_inrange.append(char)
-    return char_inrange
+            char_in_range.append(char)
+    return char_in_range
 
 
 # reduce shield or hp

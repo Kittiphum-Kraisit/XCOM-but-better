@@ -24,7 +24,7 @@ class grid():
 
     def drawcell(self, surface):
         # draw a cell on surface
-        color2 = pygame.Color(255, 255, 255)
+        color2 = pygame.Color(221, 185, 247)
         pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.rangeX, self.positionY), 5)
         pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.positionX, self.rangeY), 5)
         pygame.draw.line(surface, color2, (self.rangeX, self.positionY), (self.rangeX, self.rangeY), 5)
@@ -70,7 +70,7 @@ class grid():
 def fillflush(x, y, range, table, surface, arr):
     # x, y = position
     if table[y][x].resident == None:
-        table[y][x].highlight(surface, (128, 0, 0, 50))
+        table[y][x].highlight(surface, (0, 204, 0, 50))
         arr.append((y, x))
     if range <= 0:
         return y, x
@@ -92,19 +92,20 @@ def setrange(char, table, surface, type):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
                 if ran <= char.Stamina and table[x][y].resident == None:
-                    table[x][y].highlight(surface, (128, 0, 0, 50))
+                    table[x][y].highlight(surface, (0, 204, 0, 50))  # prev. (128, 0, 0, 50)
+
     elif type == "attack":
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
                 if ran <= char.Atk_range and table[x][y].resident == None:
-                    table[x][y].highlight(surface, (255, 192, 203, 50))
+                    table[x][y].highlight(surface, (255, 255, 0, 50))  # prev. (255, 192, 203, 50)
     elif type == "skill":
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
                 if ran <= char.Skill_range and table[x][y].resident == None:
-                    table[x][y].highlight(surface, (153, 204, 255, 50))
+                    table[x][y].highlight(surface, (255, 153, 0, 50))  # prev. (153, 204, 255, 50)
 
 
 def charsetup(charlist, surface, table):
