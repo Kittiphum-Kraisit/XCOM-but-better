@@ -2,6 +2,7 @@ import math
 
 import pygame
 import random
+from pygame import mixer
 from module.button import Button, draw_text, draw_bg, draw_img
 from module.Character import choose_char, obj_char_create
 from module.Scene import choose_character_in_pygame, blit_rotate
@@ -10,6 +11,15 @@ from module.chicTest import *
 
 # Init pygame
 pygame.init()
+pygame.mixer.init()
+# Type 1
+# bg_music = pygame.mixer.Sound("audio/rex.mp3")
+# bg_music.set_volume(0.7)
+# bg_music.play()
+# Type 2
+# mixer.music.load("audio/rex.mp3")
+mixer.music.set_volume(0.7)
+mixer.Channel(0).play(pygame.mixer.Sound("audio/MainMenuSound.mp3"))
 clock = pygame.time.Clock()
 fps = 60
 test = True
@@ -27,6 +37,7 @@ font = pygame.font.SysFont('Times New Roman', 14)
 bigger_font = pygame.font.SysFont('Times New Roman', 24)
 white = (255, 255, 255)
 red = (255, 0, 0)
+black = (0, 0, 0)
 green = (0, 255, 0)
 blue = (0, 0, 255)
 
@@ -53,11 +64,11 @@ class char_card:
         screen.blit(self.image, self.rect)
 
     def draw_info(self):
-        draw_text(screen, self.info.Name, font, white, self.x - 50, self.y + 100)
-        draw_text(screen, f'HP: {str(self.info.HP)}', font, white, self.x - 50, self.y + 120)
-        draw_text(screen, f'Mana: {str(self.info.Mana)}', font, white, self.x - 50, self.y + 140)
-        draw_text(screen, f'Skill: {self.info.Skill_name}', font, white, self.x - 50, self.y + 160)
-        draw_text(screen, f'AtkDmg: {str(self.info.Atk_damage)}', font, white, self.x - 50, self.y + 180)
+        draw_text(screen, self.info.Name, font, black, self.x - 50, self.y + 100)
+        draw_text(screen, f'HP: {str(self.info.HP)}', font, black, self.x - 50, self.y + 120)
+        draw_text(screen, f'Mana: {str(self.info.Mana)}', font, black, self.x - 50, self.y + 140)
+        draw_text(screen, f'Skill: {self.info.Skill_name}', font, black, self.x - 50, self.y + 160)
+        draw_text(screen, f'AtkDmg: {str(self.info.Atk_damage)}', font, black, self.x - 50, self.y + 180)
 
 
 # Game parameters
@@ -89,11 +100,14 @@ table_arr = []
 start_point = None
 
 while run:
-    screen.fill(0)
+    screen.fill((220, 254, 254))
     if scene == 1:
         # Welcome screen
-        draw_text(screen, "Welcome", font, white, 350, 200)
-        draw_text(screen, "Click to start", font, white, 350, 250)
+        # draw_text(screen, "Welcome", font, black, 350, 200)
+        # draw_text(screen, "Click to start", font, black, 350, 250)
+        # Image ver.
+        main_menu = pygame.image.load("pic/main menu.png")
+        screen.blit(main_menu, main_menu.get_rect())
     elif scene == 2:
         # Character selection team1
         scene = choose_character_in_pygame(c, screen, cc_team1, 2)
@@ -103,9 +117,9 @@ while run:
 
     elif scene == 4:
         # Char select start position with UI for team 1
-        draw_text(screen, "Team 1 set position: ", font, white, 400, 0)
+        draw_text(screen, "Team 1 set position: ", font, black, 400, 0)
         if len(start1) < 5:
-            draw_text(screen, f"{char_info1[len(start1)].Name}", font, white, 520, 0)
+            draw_text(screen, f"{char_info1[len(start1)].Name}", font, black, 520, 0)
         table_arr = drawtable(10, 10, (120, 80), (620, 535), screen)
         pygame.draw.rect(screen, red, pygame.Rect((120, 80), (50, 455)), 2)
 
@@ -123,10 +137,10 @@ while run:
 
     elif scene == 5:
         # Char select start position with UI for team 2
-        draw_text(screen, "Team 2 set position: ", font, white, 400, 0)
+        draw_text(screen, "Team 2 set position: ", font, black, 400, 0)
         table_arr = drawtable(10, 10, (120, 80), (620, 535), screen)
         if len(start2) < 5:
-            draw_text(screen, f"{char_info2[len(start2)].Name}", font, white, 520, 0)
+            draw_text(screen, f"{char_info2[len(start2)].Name}", font, black, 520, 0)
         pygame.draw.rect(screen, (0, 0, 255), pygame.Rect((570, 80), (50, 455)), 2)
 
         # Render characters icons inside grids
@@ -148,8 +162,8 @@ while run:
     elif scene == 6:
         # Roll initiative
         elapsed = pygame.time.get_ticks() - start_time
-        screen.fill(0)
-        draw_text(screen, "Rolling Characters speed", bigger_font, white, ((screen_width // 2) - 100), 150)
+        # screen.fill(0)
+        draw_text(screen, "Rolling Characters speed", bigger_font, black, ((screen_width // 2) - 100), 150)
         blit_rotate(screen, pygame.image.load("pic/dice.png"), (((screen_width // 2) - 225), (screen_height // 4)),
                     angle)
         angle += 1
@@ -201,7 +215,9 @@ while run:
 
     elif scene == 7:
         # Gameplay
-
+        mixer.Channel(0).stop()
+        if mixer.Channel(1).get_busy() == False:
+            mixer.Channel(1).play(pygame.mixer.Sound("audio/FightMusic.mp3"))
         # Draw table, queue
         table_arr = drawtable(10, 10, (120, 80), (620, 535), screen)
         queue_table = drawtable(10, 1, (120, 10), (620, 60), screen)
@@ -211,18 +227,18 @@ while run:
 
         # Display character info. when selected
         if old_clicked is not False:
-            draw_text(screen, old_clicked.Name, font, white, 150, screen_height - 140)
+            draw_text(screen, old_clicked.Name, font, black, 150, screen_height - 140)
             draw_text(screen, "HP: " + str(old_clicked.HP), font, red, 150, screen_height - 120)
             draw_text(screen, "MP: " + str(old_clicked.Mana), font, blue, 150, screen_height - 100)
-            draw_text(screen, "Stamina: " + str(old_clicked.Stamina), font, white, 150, screen_height - 80)
-            draw_text(screen, "Movement: " + str(old_clicked.Movement), font, white, 150, screen_height - 60)
+            draw_text(screen, "Stamina: " + str(old_clicked.Stamina), font, black, 150, screen_height - 80)
+            draw_text(screen, "Movement: " + str(old_clicked.Movement), font, black, 150, screen_height - 60)
             draw_img(screen, pygame.image.load(f"pic/Full/{old_clicked.Name}.png"), (0, screen_height - 250))
-            draw_text(screen, "Attack damage: " + str(old_clicked.Atk_damage), font, white, 300, screen_height - 140)
-            draw_text(screen, "Attack range: " + str(old_clicked.Atk_range), font, white, 300, screen_height - 120)
-            draw_text(screen, "Skill: " + str(old_clicked.Skill_name), font, white, 300, screen_height - 100)
+            draw_text(screen, "Attack damage: " + str(old_clicked.Atk_damage), font, black, 300, screen_height - 140)
+            draw_text(screen, "Attack range: " + str(old_clicked.Atk_range), font, black, 300, screen_height - 120)
+            draw_text(screen, "Skill: " + str(old_clicked.Skill_name), font, black, 300, screen_height - 100)
 
             if old_clicked.Shield > 0:
-                draw_text(screen, "Shield: " + str(old_clicked.Shield), font, white, 300, screen_height - 100)
+                draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, 300, screen_height - 100)
 
 
 
@@ -234,7 +250,7 @@ while run:
             draw_text(screen, f'Team {char.Team}', font, red, screen_width - 100, 0)
         else:
             draw_text(screen, f'Team {char.Team}', font, blue, screen_width - 100, 0)
-        draw_text(screen, f'{char.Name}\'s turn', font, white, screen_width - 100, 30)
+        draw_text(screen, f'{char.Name}\'s turn', font, black, screen_width - 100, 30)
 
         # if death then skip turn
         if char.HP <= 0:
@@ -297,7 +313,6 @@ while run:
 
         # check whether player takes an action yet
         if status is not None:
-
             # if player is moving, highlight the available grid space
             if status == "move":
                 moveable = fillflush(char.Position[0], char.Position[1], char.Stamina, table_arr, screen, [])
@@ -356,6 +371,7 @@ while run:
                 for i in range(0, 10):
                     if c[i].rect.collidepoint(pos):
                         if c[i].available and (len(cc_team1) < 5):
+                            mixer.Channel(3).play(pygame.mixer.Sound("audio/CharSelect.mp3"))
                             cc_team1.append(c[i].id)
                             c[i].available = not c[i].available
                         elif not c[i].available and c[i].id in cc_team1:
@@ -364,7 +380,7 @@ while run:
                         char_info1 = choose_char(cc_team1, 1)
                         print(char_info1)
 
-            # Character selection team1
+            # Character selection team2
             if scene == 3:
                 pos = pygame.mouse.get_pos()
 
@@ -372,6 +388,7 @@ while run:
                 for i in range(0, 10):
                     if c[i].rect.collidepoint(pos):
                         if c[i].available and (len(cc_team2) < 5):
+                            mixer.Channel(3).play(pygame.mixer.Sound("audio/CharSelect.mp3"))
                             cc_team2.append(c[i].id)
                             c[i].available = not c[i].available
                         elif not c[i].available and c[i].id in cc_team2:

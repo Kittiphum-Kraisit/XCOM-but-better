@@ -11,12 +11,13 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
     white = (255, 255, 255)
     red = (255, 0, 0)
     blue = (0, 0, 255)
+    black = (0, 0, 0)
     if scene_number == 2:
         color = red
     else:
         color = blue
     Next_butt = Button(screen, 650, 650, 80, 30,(196,196,196))
-    draw_text(screen, "Player " + str(scene_number-1) + " Select character", font, white, 370, 0)
+    draw_text(screen, "Player " + str(scene_number-1) + " Select character", font, black, 370, 0)
     for i in range(10):
         if all_character_list[i].available:
             all_character_list[i].draw_image()
