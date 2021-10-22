@@ -264,10 +264,23 @@ while run:
 
 
         # Action Buttons setting
-        Atk_button = Button(screen, 500, 550, 100, 50, (156, 246, 255))
-        Move_button = Button(screen, 500, 620, 100, 50, (156, 246, 255))
-        Skill_button = Button(screen, 620, 550, 100, 50, (156, 246, 255))
-        End_button = Button(screen, 620, 620, 100, 50, (156, 246, 255))
+        Atk_button = Button(screen, 500, 550, 100, 50)
+        if not attacked:
+            draw_img(screen, pygame.image.load('pic/Buttons/Attack.png'), (500, 550))
+        else:
+            draw_img(screen, pygame.image.load('pic/Buttons/Attack_pressed.png'), (500, 550))
+        Move_button = Button(screen, 500, 620, 100, 50)
+        if char.Stamina > 0:
+            draw_img(screen, pygame.image.load('pic/Buttons/Move.png'), (500, 620))
+        else:
+            draw_img(screen, pygame.image.load('pic/Buttons/Move_pressed.png'), (500, 620))
+        Skill_button = Button(screen, 620, 550, 100, 50)
+        if not casted:
+            draw_img(screen, pygame.image.load('pic/Buttons/Skill.png'), (620, 550))
+        else:
+            draw_img(screen, pygame.image.load('pic/Buttons/Skill_pressed.png'), (620, 550))
+        End_button = Button(screen, 620, 620, 100, 50)
+        draw_img(screen, pygame.image.load('pic/Buttons/End.png'), (620, 620))
         End_button.draw()
 
         # if Attack button is pressed
@@ -286,6 +299,8 @@ while run:
             else:
                 print('No target in range')
             print("ATK")
+
+
 
         # if Move button is pressed
         if Move_button.draw():
@@ -327,10 +342,10 @@ while run:
                 setrange(char, table_arr, screen, status)
 
         # Draw text on buttons
-        draw_text(screen, "Attack", font, red, Atk_button.rect.centerx - 20, Atk_button.rect.centery - 10)
-        draw_text(screen, "Move", font, red, Move_button.rect.centerx - 20, Move_button.rect.centery - 10)
-        draw_text(screen, "Skill", font, red, Skill_button.rect.centerx - 20, Skill_button.rect.centery - 10)
-        draw_text(screen, "End", font, red, End_button.rect.centerx - 20, End_button.rect.centery - 10)
+        # draw_text(screen, "Attack", font, red, Atk_button.rect.centerx - 20, Atk_button.rect.centery - 10)
+        # draw_text(screen, "Move", font, red, Move_button.rect.centerx - 20, Move_button.rect.centery - 10)
+        # draw_text(screen, "Skill", font, red, Skill_button.rect.centerx - 20, Skill_button.rect.centery - 10)
+        # draw_text(screen, "End", font, red, End_button.rect.centerx - 20, End_button.rect.centery - 10)
 
         # Change to scene 8 when one of the team lost
         if len(char_info1) == 0 or len(char_info2) == 0:

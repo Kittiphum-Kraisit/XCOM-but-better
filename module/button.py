@@ -3,7 +3,7 @@ import pygame
 
 # button class
 class Button():
-	def __init__(self, surface, x, y, size_x, size_y, color):
+	def __init__(self, surface, x, y, size_x, size_y, color=None):
 		self.rect = pygame.Rect((x, y), (size_x, size_y))
 		self.rect.topleft = (x, y)
 		self.clicked = False
@@ -27,7 +27,8 @@ class Button():
 		if pygame.mouse.get_pressed()[0] == 0:
 			self.clicked = False
 		sc = pygame.Surface((self.rect.width, self.rect.height))
-		sc.fill(self.color)
+		if self.color is not None:
+			sc.fill(self.color)
 		sc.set_alpha(255)
 		# draw button
 		self.surface.blit(sc, (self.x, self.y))
