@@ -21,6 +21,7 @@ class grid():
         self.resident = None
         self.checked = None
         self.obstacle = False
+        self.trap = None
 
     def drawcell(self, surface):
         # draw a cell on surface

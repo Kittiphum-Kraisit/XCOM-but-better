@@ -1,5 +1,4 @@
 import math
-
 import pygame
 import random
 from pygame import mixer
@@ -93,6 +92,7 @@ executed = False
 attacked = False
 casted = False
 old_clicked = False
+once = False
 initposition1 = []
 initposition2 = []
 status = "None"
@@ -224,7 +224,11 @@ while run:
         charsetup(char_info1, screen, table_arr)
         charsetup(char_info2, screen, table_arr)
         queuesetup(queue, screen, queue_table)
-
+        arrow_img = pygame.image.load("pic/queue/arrow.png")
+        arrow_img = pygame.transform.scale(arrow_img, (math.floor(arrow_img.get_width() * 0.5),
+                                                       math.floor(arrow_img.get_height() * 0.5)))
+        draw_img(screen, arrow_img, (130, -15))
+        draw_img(screen, pygame.image.load("pic/queue/queue.png"), (20, 20))
         # Display character info. when selected
         if old_clicked is not False:
             draw_text(screen, old_clicked.Name, font, black, 150, screen_height - 140)
@@ -352,22 +356,21 @@ while run:
             print('Win scene')
 
     elif scene == 8:
-
+        mixer.Channel(1).stop()
+        if not once:
+            mixer.Channel(0).play(pygame.mixer.Sound("audio/WinSound.mp3"))
+            once = True
         # Display who winner scene
-        lp = pygame.image.load("pic/left-popper.png")
-        rp = pygame.image.load("pic/right-popper.png")
+        player1_win = pygame.image.load("pic/Victory1.png")
+        player2_win = pygame.image.load("pic/Victory2.png")
 
         # Player 2 won
         if len(char_info1) == 0:
-            draw_text(screen, "Player 2 Win!", pygame.font.SysFont('Times New Roman', 48), (255, 255, 224),
-                      (screen.get_width() // 2) - 125, (screen_height // 2) - 50)
+            draw_img(screen, player2_win, (0, 0))
 
         # Player 1 won
         else:
-            draw_text(screen, "Player 1 Win!", pygame.font.SysFont('Times New Roman', 48), (255, 255, 224),
-                      (screen.get_width() // 2) - 125, (screen_height // 2) - 50)
-        draw_img(screen, pygame.transform.scale(lp, (lp.get_width() // 2, lp.get_height() // 2)), (50, 400))
-        draw_img(screen, pygame.transform.scale(rp, (rp.get_width() // 2, rp.get_height() // 2)), (500, 400))
+            draw_img(screen, player1_win, (0, 0))
 
     # Events in games
     for event in pygame.event.get():
