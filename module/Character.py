@@ -27,6 +27,7 @@ class Character:
         self.Shield = 0
         path = f"pic/Icon/{name}.png"
         self.Icon = pygame.image.load(path)
+        self.equip = object
 
     def set_currspeed(self, initvalue):
         self.CurrSpeed = self.Speed + initvalue

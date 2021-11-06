@@ -1,5 +1,4 @@
 import math
-
 import pygame
 import random
 from pygame import mixer
@@ -94,6 +93,7 @@ executed = False
 attacked = False
 casted = False
 old_clicked = False
+once = False
 initposition1 = []
 initposition2 = []
 status = "None"
@@ -164,8 +164,9 @@ while run:
         # Roll initiative
         elapsed = pygame.time.get_ticks() - start_time
         # screen.fill(0)
-        draw_text(screen, "Rolling Characters speed", bigger_font, black, ((screen_width // 2) - 100), 150)
-        blit_rotate(screen, pygame.image.load("pic/dice.png"), (((screen_width // 2) - 225), (screen_height // 4)),
+        draw_img(screen, pygame.image.load("pic/Roll_Bg.png"), (0, 0))
+        # draw_text(screen, "Rolling Characters speed", bigger_font, black, ((screen_width // 2) - 100), 150)
+        blit_rotate(screen, pygame.image.load("pic/new_Dice.png"), (((screen_width // 2) - 350), (screen_height // 4) + 55),3,
                     angle)
         angle += 1
         pygame.display.flip()
@@ -225,7 +226,11 @@ while run:
         charsetup(char_info1, screen, table_arr)
         charsetup(char_info2, screen, table_arr)
         queuesetup(queue, screen, queue_table)
-
+        arrow_img = pygame.image.load("pic/queue/arrow.png")
+        arrow_img = pygame.transform.scale(arrow_img, (math.floor(arrow_img.get_width() * 0.5),
+                                                       math.floor(arrow_img.get_height() * 0.5)))
+        draw_img(screen, arrow_img, (130, -15))
+        draw_img(screen, pygame.image.load("pic/queue/queue.png"), (20, 20))
         # Display character info. when selected
         if old_clicked is not False:
             draw_text(screen, old_clicked.Name, font, black, screen_width * 150/800, screen_height-bottom_panel)
@@ -263,7 +268,6 @@ while run:
                 casted = False
                 start_time = pygame.time.get_ticks()
                 angle = 0
-
 
         # Action Buttons setting
         Atk_button = Button(screen, screen_width*500/800, screen_height*550/700, 100, 50)
@@ -355,22 +359,21 @@ while run:
             print('Win scene')
 
     elif scene == 8:
-
+        mixer.Channel(1).stop()
+        if not once:
+            mixer.Channel(0).play(pygame.mixer.Sound("audio/WinSound.mp3"))
+            once = True
         # Display who winner scene
-        lp = pygame.image.load("pic/left-popper.png")
-        rp = pygame.image.load("pic/right-popper.png")
+        player1_win = pygame.image.load("pic/Victory1.png")
+        player2_win = pygame.image.load("pic/Victory2.png")
 
         # Player 2 won
         if len(char_info1) == 0:
-            draw_text(screen, "Player 2 Win!", pygame.font.SysFont('Times New Roman', 48), (255, 255, 224),
-                      (screen.get_width() // 2) - 125, (screen_height // 2) - 50)
+            draw_img(screen, player2_win, (0, 0))
 
         # Player 1 won
         else:
-            draw_text(screen, "Player 1 Win!", pygame.font.SysFont('Times New Roman', 48), (255, 255, 224),
-                      (screen.get_width() // 2) - 125, (screen_height // 2) - 50)
-        draw_img(screen, pygame.transform.scale(lp, (lp.get_width() // 2, lp.get_height() // 2)), (50, 400))
-        draw_img(screen, pygame.transform.scale(rp, (rp.get_width() // 2, rp.get_height() // 2)), (500, 400))
+            draw_img(screen, player1_win, (0, 0))
 
     # Events in games
     for event in pygame.event.get():
