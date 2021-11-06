@@ -17,7 +17,8 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
         color = red
     else:
         color = blue
-    Next_butt = Button(screen, 650, 650, 80, 30,(196,196,196))
+    w,h = pygame.display.get_surface().get_size()
+    Next_butt = Button(screen, w - w/10, h - h/10, 80, 30,(196,196,196))
     draw_text(screen, "Player " + str(scene_number-1) + " Select character", font, black, 370, 0)
     for i in range(10):
         if all_character_list[i].available:
@@ -36,7 +37,7 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
             print("Succ")
             return scene_number + 1
 
-        draw_text(screen, "Next ->", bigger_font, red, 650, 650)
+        draw_text(screen, "Next ->", bigger_font, red, w - w/10, h - h/10)
 
     return scene_number
 

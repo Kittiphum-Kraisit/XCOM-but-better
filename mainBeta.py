@@ -24,9 +24,9 @@ fps = 60
 test = True
 
 # Screen setting
-bottom_panel = 220 #150 #220
-screen_width = 1280 #800 #1280
-screen_height = 1080 #550 + bottom_panel #1080
+screen_width = 800 #1280 #800
+screen_height = 700 #1080 #700
+bottom_panel = screen_height * 220/1080 #150
 
 screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption('Game')
@@ -46,12 +46,13 @@ background_img = pygame.image.load('pic/black.jpg').convert_alpha()
 
 # pygame object
 class char_card:
-    def __init__(self, x, y, id):
+    def __init__(self, x, y, id, scale):
         self.id = id
+        self.scale = scale
         self.info = obj_char_create(str(self.id), 0)
         img = pygame.image.load(f'pic/Full/{self.info.Name}.png').convert_alpha()
         self.image = pygame.transform.scale(img,
-                                            (math.floor(img.get_width() * 0.75), math.floor(img.get_height() * 0.75))
+                                            (math.floor(img.get_width() * scale * 0.6/800), math.floor(img.get_height() * scale * 0.6/800))
                                             )
         self.x = x
         self.y = y
@@ -63,11 +64,11 @@ class char_card:
         screen.blit(self.image, self.rect)
 
     def draw_info(self):
-        draw_text(screen, self.info.Name, font, black, self.x - 50, self.y + 100)
-        draw_text(screen, f'HP: {str(self.info.HP)}', font, black, self.x - 50, self.y + 120)
-        draw_text(screen, f'Mana: {str(self.info.Mana)}', font, black, self.x - 50, self.y + 140)
-        draw_text(screen, f'Skill: {self.info.Skill_name}', font, black, self.x - 50, self.y + 160)
-        draw_text(screen, f'AtkDmg: {str(self.info.Atk_damage)}', font, black, self.x - 50, self.y + 180)
+        draw_text(screen, self.info.Name, font, black, self.x - 50, self.y + self.image.get_height()/2)
+        draw_text(screen, f'HP: {str(self.info.HP)}', font, black, self.x - 50, self.y + self.image.get_height()/2*1.25)
+        draw_text(screen, f'Mana: {str(self.info.Mana)}', font, black, self.x - 50, self.y + self.image.get_height()/2*1.5)
+        draw_text(screen, f'Skill: {self.info.Skill_name}', font, black, self.x - 50, self.y + self.image.get_height()/2*1.75)
+        draw_text(screen, f'AtkDmg: {str(self.info.Atk_damage)}', font, black, self.x - 50, self.y + self.image.get_height()/2*2)
 
 
 # Game parameters
@@ -82,9 +83,9 @@ cc_team2 = []
 count = 0
 
 for i in range(0, 5):
-    c.append(char_card(90 + (150 * i), (screen_height - bottom_panel)/2 - (screen_height/4), i))
+    c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) * 150/700, i, screen_height))
 for i in range(5, 10):
-    c.append(char_card(90 + (150 * (i - 5)), (screen_height - bottom_panel)/2 + (screen_height/4), i))
+    c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * (i - 5)), (screen_height-bottom_panel) * 425/700, i, screen_height))
 
 run = True
 scene = 1
@@ -117,11 +118,11 @@ while run:
 
     elif scene == 4:
         # Char select start position with UI for team 1
-        draw_text(screen, "Team 1 set position: ", font, black, 400, 0)
+        draw_text(screen, "Team 1 set position: ", font, black, screen_width/2, screen_height/1000)
         if len(start1) < 5:
-            draw_text(screen, f"{char_info1[len(start1)].Name}", font, black, 520, 0)
-        table_arr = drawtable(10, 10, (120, 80), (620, 535), screen)
-        pygame.draw.rect(screen, red, pygame.Rect((120, 80), (50, 455)), 2)
+            draw_text(screen, f"{char_info1[len(start1)].Name}", font, black, screen_width/1000, screen_height/1000)
+        table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
+        pygame.draw.rect(screen, red, pygame.Rect((screen_width*120/800, screen_height*80/700), (screen_width*500/800/10, screen_height*455/700)), 2)
 
         # Render characters icons inside grids
         if len(initposition1) != 0:
@@ -138,10 +139,10 @@ while run:
     elif scene == 5:
         # Char select start position with UI for team 2
         draw_text(screen, "Team 2 set position: ", font, black, 400, 0)
-        table_arr = drawtable(10, 10, (120, 80), (620, 535), screen)
+        table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
         if len(start2) < 5:
             draw_text(screen, f"{char_info2[len(start2)].Name}", font, black, 520, 0)
-        pygame.draw.rect(screen, (0, 0, 255), pygame.Rect((570, 80), (50, 455)), 2)
+        pygame.draw.rect(screen, (0, 0, 255), pygame.Rect((screen_width*570/800, screen_height*80/700), (screen_width*500/800/10, screen_height*455/700)), 2)
 
         # Render characters icons inside grids
         if len(initposition1) != 0:
@@ -220,8 +221,8 @@ while run:
         if mixer.Channel(1).get_busy() == False:
             mixer.Channel(1).play(pygame.mixer.Sound("audio/FightMusic.mp3"))
         # Draw table, queue
-        table_arr = drawtable(10, 10, (120, 80), (620, 535), screen)
-        queue_table = drawtable(10, 1, (120, 10), (620, 60), screen)
+        table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
+        queue_table = drawtable(10, 1, (screen_width*120/800, screen_height*10/700), (screen_width*620/800, screen_height*60/700), screen)
         charsetup(char_info1, screen, table_arr)
         charsetup(char_info2, screen, table_arr)
         queuesetup(queue, screen, queue_table)
@@ -232,18 +233,19 @@ while run:
         draw_img(screen, pygame.image.load("pic/queue/queue.png"), (20, 20))
         # Display character info. when selected
         if old_clicked is not False:
-            draw_text(screen, old_clicked.Name, font, black, 150, screen_height - 140)
-            draw_text(screen, "HP: " + str(old_clicked.HP), font, red, 150, screen_height - 120)
-            draw_text(screen, "MP: " + str(old_clicked.Mana), font, blue, 150, screen_height - 100)
-            draw_text(screen, "Stamina: " + str(old_clicked.Stamina), font, black, 150, screen_height - 80)
-            draw_text(screen, "Movement: " + str(old_clicked.Movement), font, black, 150, screen_height - 60)
-            draw_img(screen, pygame.image.load(f"pic/Full/{old_clicked.Name}.png"), (0, screen_height - 250))
-            draw_text(screen, "Attack damage: " + str(old_clicked.Atk_damage), font, black, 300, screen_height - 140)
-            draw_text(screen, "Attack range: " + str(old_clicked.Atk_range), font, black, 300, screen_height - 120)
-            draw_text(screen, "Skill: " + str(old_clicked.Skill_name), font, black, 300, screen_height - 100)
+            draw_text(screen, old_clicked.Name, font, black, screen_width * 150/800, screen_height-bottom_panel)
+            draw_text(screen, "HP: " + str(old_clicked.HP), font, red, screen_width * 150/800, screen_height-bottom_panel + bottom_panel/5)
+            draw_text(screen, "MP: " + str(old_clicked.Mana), font, blue, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*2/5)
+            draw_text(screen, "Stamina: " + str(old_clicked.Stamina), font, black, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*3/5)
+            draw_text(screen, "Movement: " + str(old_clicked.Movement), font, black, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*4/5)
+            img = pygame.image.load(f"pic/Full/{old_clicked.Name}.png").convert_alpha()
+            draw_img(screen, pygame.transform.scale(img, (math.floor(img.get_width() * screen_height * 0.6/800), math.floor(img.get_height() * screen_height * 0.6/800))), (0, screen_height-bottom_panel))
+            draw_text(screen, "Attack damage: " + str(old_clicked.Atk_damage), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel/5)
+            draw_text(screen, "Attack range: " + str(old_clicked.Atk_range), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*2/5)
+            draw_text(screen, "Skill: " + str(old_clicked.Skill_name), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*3/5)
 
             if old_clicked.Shield > 0:
-                draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, 300, screen_height - 100)
+                draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*4/5)
 
 
 
@@ -268,23 +270,23 @@ while run:
                 angle = 0
 
         # Action Buttons setting
-        Atk_button = Button(screen, 500, 550, 100, 50)
+        Atk_button = Button(screen, screen_width*500/800, screen_height*550/700, 100, 50)
         if not attacked:
-            draw_img(screen, pygame.image.load('pic/Buttons/Attack.png'), (500, 550))
+            draw_img(screen, pygame.image.load('pic/Buttons/Attack.png'), (screen_width*500/800, screen_height*550/700))
         else:
-            draw_img(screen, pygame.image.load('pic/Buttons/Attack_pressed.png'), (500, 550))
-        Move_button = Button(screen, 500, 620, 100, 50)
+            draw_img(screen, pygame.image.load('pic/Buttons/Attack_pressed.png'), (screen_width*500/800, screen_height*550/700))
+        Move_button = Button(screen, screen_width*500/800, screen_height*620/700, 100, 50)
         if char.Stamina > 0:
-            draw_img(screen, pygame.image.load('pic/Buttons/Move.png'), (500, 620))
+            draw_img(screen, pygame.image.load('pic/Buttons/Move.png'), (screen_width*500/800, screen_height*620/700))
         else:
-            draw_img(screen, pygame.image.load('pic/Buttons/Move_pressed.png'), (500, 620))
-        Skill_button = Button(screen, 620, 550, 100, 50)
+            draw_img(screen, pygame.image.load('pic/Buttons/Move_pressed.png'), (screen_width*500/800, screen_height*620/700))
+        Skill_button = Button(screen, screen_width*620/800, screen_height*550/700, 100, 50)
         if not casted:
-            draw_img(screen, pygame.image.load('pic/Buttons/Skill.png'), (620, 550))
+            draw_img(screen, pygame.image.load('pic/Buttons/Skill.png'), (screen_width*620/800, screen_height*550/700))
         else:
-            draw_img(screen, pygame.image.load('pic/Buttons/Skill_pressed.png'), (620, 550))
-        End_button = Button(screen, 620, 620, 100, 50)
-        draw_img(screen, pygame.image.load('pic/Buttons/End.png'), (620, 620))
+            draw_img(screen, pygame.image.load('pic/Buttons/Skill_pressed.png'), (screen_width*620/800, screen_height*550/700))
+        End_button = Button(screen, screen_width*620/800, screen_height*620/700, 100, 50)
+        draw_img(screen, pygame.image.load('pic/Buttons/End.png'), (screen_width*620/800, screen_height*620/700))
         End_button.draw()
 
         # if Attack button is pressed
