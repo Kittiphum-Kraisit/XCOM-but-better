@@ -1,6 +1,7 @@
 import random
 import pygame
-from module.button import draw_bg, draw_text, Button
+import math
+from module.button import draw_bg, draw_text, Button, draw_img
 from module.function import *
 # colors and fonts
 
@@ -22,7 +23,8 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
         if all_character_list[i].available:
             all_character_list[i].draw_image()
         elif not all_character_list[i].available:
-            pygame.draw.rect(screen, color, all_character_list[i].rect, 2)
+            # pygame.draw.rect(screen, color, all_character_list[i].rect, 2)
+            draw_img(screen, pygame.image.load("pic/Character_Select.png"),all_character_list[i].rect)
             all_character_list[i].draw_image()
         all_character_list[i].draw_info()
     if len(list_of_team) == 5:
@@ -39,7 +41,9 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
     return scene_number
 
 # a function to rotate an image in place (for the dice)
-def blit_rotate(surf, image, topleft, angle):
-    rotated_image = pygame.transform.rotate(image, angle)
-    new_rect = rotated_image.get_rect(center=image.get_rect(topleft=topleft).center)
+def blit_rotate(surf, image, topleft, scale, angle):
+    resized_img = pygame.transform.scale(image, (math.floor(image.get_width() * scale),
+                                                   math.floor(image.get_height() * scale)))
+    rotated_image = pygame.transform.rotate(resized_img, angle)
+    new_rect = rotated_image.get_rect(center=resized_img.get_rect(topleft=topleft).center)
     surf.blit(rotated_image, new_rect.topleft)

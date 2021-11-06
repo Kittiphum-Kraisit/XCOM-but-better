@@ -24,11 +24,11 @@ fps = 60
 test = True
 
 # Screen setting
-bottom_panel = 150
-screen_width = 800
-screen_height = 550 + bottom_panel
+bottom_panel = 220 #150 #220
+screen_width = 1280 #800 #1280
+screen_height = 1080 #550 + bottom_panel #1080
 
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
 pygame.display.set_caption('Game')
 
 # UI
@@ -82,9 +82,9 @@ cc_team2 = []
 count = 0
 
 for i in range(0, 5):
-    c.append(char_card(90 + (150 * i), 150, i))
+    c.append(char_card(90 + (150 * i), (screen_height - bottom_panel)/2 - (screen_height/4), i))
 for i in range(5, 10):
-    c.append(char_card(90 + (150 * (i - 5)), 450, i))
+    c.append(char_card(90 + (150 * (i - 5)), (screen_height - bottom_panel)/2 + (screen_height/4), i))
 
 run = True
 scene = 1
@@ -163,8 +163,9 @@ while run:
         # Roll initiative
         elapsed = pygame.time.get_ticks() - start_time
         # screen.fill(0)
-        draw_text(screen, "Rolling Characters speed", bigger_font, black, ((screen_width // 2) - 100), 150)
-        blit_rotate(screen, pygame.image.load("pic/dice.png"), (((screen_width // 2) - 225), (screen_height // 4)),
+        draw_img(screen, pygame.image.load("pic/Roll_Bg.png"), (0, 0))
+        # draw_text(screen, "Rolling Characters speed", bigger_font, black, ((screen_width // 2) - 100), 150)
+        blit_rotate(screen, pygame.image.load("pic/new_Dice.png"), (((screen_width // 2) - 350), (screen_height // 4) + 55),3,
                     angle)
         angle += 1
         pygame.display.flip()
