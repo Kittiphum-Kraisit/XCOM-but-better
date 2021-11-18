@@ -3,6 +3,13 @@ import random
 from module.Equipment import Equipment
 
 
+class bomb:
+    def __init__(self, x, y):
+        self.position = (x, y)
+        # self.pic = bombpic
+        self.Name = "bomb"
+
+
 # check the attack range
 def attack_range_check(char_atk, char_def_list):
     char_enemy = []
@@ -26,10 +33,13 @@ def LoS(char_atk, char_list, table):
             obstacles.append((unit.Position[1], unit.Position[0]))
         elif check <= char_atk.Atk_range and unit.Team == char_atk.Team and unit.Name != char_atk.Name:
             obstacles.append((unit.Position[1], unit.Position[0]))
-    for y in range(len(table)):
-        for x in range(len(table[y])):
-            ran = abs(char_atk.Position[0] - table[y][x].indexX) + abs(char_atk.Position[1] - table[y][x].indexY)
-            if ran <= char_atk.Atk_range and table[y][x].resident == "obstacle":
+    # for y in range(len(table)):
+    #     for x in range(len(table[y])):
+    for y in range(0, 10):
+        for x in range(0, 10):
+            ran = abs(char_atk.Position[0] - table[y][x].indexY) + abs(char_atk.Position[1] - table[y][x].indexX)
+            if ran <= char_atk.Atk_range and table[y][x].obstacle == True:
+                print(table[y][x].obstacle)
                 obstacles.append((y, x))
     print("1st", obstacles)
     for i in enemies:
@@ -45,16 +55,34 @@ def line_of_sight(char, enemies, obstacles):
     print("3rd", obstacles)
     varx = 0
     for enemy in enemies:
-        print("rounds",varx)
+        bug = []
+        print("rounds", varx)
         varx += 1
         y1, x1 = enemy.Position
-        for x in range(x0, x1):
-            y = round(((y1-y0)/(x1-x0))*(x-x0) + y0)
-            if (x, y) in obstacles:
-                print("removed", x, y)
+        print("x0,x1,y0,y1", x0, x1, y0, y1)
+
+        xs = [x0 + x / 4 for x in range((x1 - x0) * 4)] if x1 > x0 \
+            else [x1 + x / 4 for x in range((x0 - x1) * 4)]
+
+        for x in xs:
+            y = round(((y1 - y0) / (x1 - x0)) * (x - x0) + y0)
+            bug.append((x, y))
+            print((y, round(x)) != (y1, x1), (y, round(x)), enemy.Position)
+            if (y, round(x)) != (y1, x1) and (x, round(y)) in obstacles:
+                print("removed", round(x), y)
+                print(enemy)
                 attackable.remove(enemy)
                 break
+        if x1 == x0:
+            ys = range(y0, y1) if y1 > y0 else range(y1, y0)
+            for y in ys:
+                print(y != y1, (y, round(x1)), enemy.Position)
+                if y != y1 and (x1, y) in obstacles:
+                    print(enemy)
+                    attackable.remove(enemy)
+                    break
         continue
+        print(bug)
     for i in attackable:
         print(i.Name)
     return attackable
@@ -97,22 +125,35 @@ def attack(char_atk, char_def):
 
 
 # move the characters
-def charmove(char, new_index, old_index, table, surface):
+def charmove(char, new_index, old_index, table, surface, bomblist=None):
     check = pos_check(char, new_index)
     if check <= char.Stamina:
         x, y = new_index
         x1, y1 = old_index
         char.position = (x, y)
+        if table[x][y].resident != None and type(table[x][y].resident) != str and table[x][y].resident.name == "bomb":
+            char.HP -= 50
+            for i in range(len(bomblist)):
+                if bomblist[i].position == (x, y):
+                    bomblist.remove(bomblist[i])
         table[x1][y1].resident = None
         table[x][y].resident = char
         table[x][y].addpic(char.Icon, surface, (x, y), char.Team)
 
 
 # check stamina
-def move(char, destination, board):
+def move(char, destination, table, bomblist):
+    x, y = destination
     check = pos_check(char, destination)
     if check <= char.Stamina:
         char.Stamina -= check
+        lst = []
+        print(lst)
+        if table[y][x].resident != None and type(table[y][x].resident) != str and table[y][x].resident.Name == "bomb":
+            char.HP -= 50
+            for i in range(len(bomblist)):
+                if bomblist[i].position == (x, y):
+                    bomblist.remove(bomblist[i])
         return True
     return False
 
@@ -270,11 +311,21 @@ def shield_skill(char_atk, char_def, dmg = 0):
 
 
 # Trapper skill
-def trap(char, place):
-    check = pos_check(char, place)
+def trap(char, place, table, trapPic, surface, bomblist):
+    place2 = (place[1], place[0])
+    check = pos_check(char, place2)
+    print(0)
+    print(check)
+    print(char.Skill_range)
     if check <= char.Skill_range:
+        print(1)
         mana_reduce(char)
+        newBomb = bomb(place2[0], place2[1])
+        table[place2[0]][place2[1]].resident = newBomb
+        table[place2[0]][place2[1]].addpic(trapPic, surface, place2, 0)
+        bomblist.append(newBomb)
         print("Trapped")
         return True 
     else:
+        print(2)
         return False

@@ -4,7 +4,7 @@ import random
 import inspect
 from pygame import mixer
 from module.button import Button, draw_text, draw_bg, draw_img
-from module.Character import choose_char, obj_char_create
+from module.Character import choose_char, obj_char_create, Character
 from module.Scene import choose_character_in_pygame, blit_rotate, choose_equipment
 from module.function import *
 from module.chicTest import *
@@ -26,16 +26,16 @@ fps = 60
 test = True
 
 # Screen setting
-screen_width = 800 #1280 #800
-screen_height = 700 #1080 #700
-bottom_panel = screen_height * 220/1080 #150
+screen_width = 800  # 1280 # 800
+screen_height = 700  # 1080 # 700
+bottom_panel = screen_height * 220/1080  # 150
 
-screen = pygame.display.set_mode((screen_width, screen_height), pygame.RESIZABLE)
+screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Game')
 
 # UI
-font = pygame.font.SysFont('Times New Roman', 14)
-bigger_font = pygame.font.SysFont('Times New Roman', 24)
+font = pygame.font.SysFont('sfcartoonisthand', 18)
+bigger_font = pygame.font.SysFont('sfcartoonisthand', 28)
 white = (255, 255, 255)
 red = (255, 0, 0)
 black = (0, 0, 0)
@@ -78,6 +78,8 @@ init1, init2 = [], []
 start1, start2 = [], []
 queue = []
 
+bomblist = []
+
 c = []
 cc_team1 = []
 cc_team2 = []
@@ -86,9 +88,9 @@ count = 0
 control = 0
 
 for i in range(0, 5):
-    c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) * 150/700, i, screen_height))
+    c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) * 200/700, i, screen_height))
 for i in range(5, 10):
-    c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * (i - 5)), (screen_height-bottom_panel) * 425/700, i, screen_height))
+    c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * (i - 5)), (screen_height-bottom_panel) * 475/700, i, screen_height))
 for i in range(0, 4):
     equipments.append(init_equipment(i))
     equipments[i].rect.center = ((screen_width*150/800) * 2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) - 250)
@@ -108,6 +110,10 @@ initposition2 = []
 status = "None"
 table_arr = []
 start_point = None
+
+bomb1 = pygame.image.load('pic/Trap_team1.png')
+bomb2 = pygame.image.load('pic/Trap_team2.png')
+
 while run:
     screen.fill((220, 254, 254))
     if scene == 1:
@@ -149,9 +155,9 @@ while run:
             scene = 4
     elif scene == 4:
         # Char select start position with UI for team 1
-        draw_text(screen, "Team 1 set position: ", font, black, screen_width/2, screen_height/1000)
+        draw_text(screen, "Team 1 set position: ", pygame.font.SysFont('sfcartoonisthand', 30), black, 180, 15)
         if len(start1) < 5:
-            draw_text(screen, f"{char_info1[len(start1)].Name}", font, black, screen_width/1000, screen_height/1000)
+            draw_text(screen, f"{char_info1[len(start1)].Name}", pygame.font.SysFont('sfcartoonisthand', 30), black, 385, 15)
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
         pygame.draw.rect(screen, red, pygame.Rect((screen_width*120/800, screen_height*80/700), (screen_width*500/800/10, screen_height*455/700)), 2)
 
@@ -169,10 +175,10 @@ while run:
 
     elif scene == 5:
         # Char select start position with UI for team 2
-        draw_text(screen, "Team 2 set position: ", font, black, 400, 0)
+        draw_text(screen, "Team 2 set position: ", pygame.font.SysFont('sfcartoonisthand', 30), black, 180, 15)
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
         if len(start2) < 5:
-            draw_text(screen, f"{char_info2[len(start2)].Name}", font, black, 520, 0)
+            draw_text(screen, f"{char_info2[len(start2)].Name}", pygame.font.SysFont('sfcartoonisthand', 30), black, 385, 15)
         pygame.draw.rect(screen, (0, 0, 255), pygame.Rect((screen_width*570/800, screen_height*80/700), (screen_width*500/800/10, screen_height*455/700)), 2)
 
         # Render characters icons inside grids
@@ -197,9 +203,9 @@ while run:
         if haha == 1:
             selected = map1
         elif haha == 2:
-            selected = map2
+            selected = map1 # map2
         elif haha == 3:
-            selected = map3
+            selected = map1 # map3
 
 
         # End scene
@@ -263,45 +269,54 @@ while run:
     elif scene == 7:
         # Gameplay
         mixer.Channel(0).stop()
-        if mixer.Channel(1).get_busy() == False:
-            mixer.Channel(1).play(pygame.mixer.Sound("audio/FightMusic.mp3"))
+        # if mixer.Channel(1).get_busy() == 0:
+        #    mixer.Channel(1).play(pygame.mixer.Sound("audio/FightMusic.mp3"))
         # Draw table, queue
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
         setMap(table_arr, selected, screen, daBox)
-        queue_table = drawtable(10, 1, (screen_width*120/800, screen_height*10/700), (screen_width*620/800, screen_height*60/700), screen)
+        queue_table = drawtable(10, 1, (screen_width*150/800, screen_height*10/700), (screen_width*620/800, screen_height*60/700), screen, 'queue')
         charsetup(char_info1, screen, table_arr)
         charsetup(char_info2, screen, table_arr)
+        bombsetup(bomblist, screen, table_arr)
         queuesetup(queue, screen, queue_table)
         arrow_img = pygame.image.load("pic/queue/arrow.png")
         arrow_img = pygame.transform.scale(arrow_img, (math.floor(arrow_img.get_width() * 0.5),
                                                        math.floor(arrow_img.get_height() * 0.5)))
         draw_img(screen, arrow_img, (130, -15))
-        draw_img(screen, pygame.image.load("pic/queue/queue.png"), (20, 20))
+        # draw_img(screen, pygame.image.load("pic/queue/queue.png"), (20, 20))
         # Display character info. when selected
-        if old_clicked is not False and inspect.isclass(old_clicked):
-            draw_text(screen, old_clicked.Name, font, black, screen_width * 150/800, screen_height-bottom_panel)
-            draw_text(screen, "HP: " + str(old_clicked.HP), font, red, screen_width * 150/800, screen_height-bottom_panel + bottom_panel/5)
-            draw_text(screen, "MP: " + str(old_clicked.Mana), font, blue, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*2/5)
-            draw_text(screen, "Stamina: " + str(old_clicked.Stamina), font, black, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*3/5)
-            draw_text(screen, "Movement: " + str(old_clicked.Movement), font, black, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*4/5)
+        # type(old_clicked)
+        if old_clicked is not False and isinstance(old_clicked, Character):
+            draw_text(screen, old_clicked.Name, font, black, screen_width * 100/800, screen_height-bottom_panel)
+            draw_text(screen, "HP: " + str(old_clicked.HP), font, red, screen_width * 100/800, screen_height-bottom_panel + bottom_panel/5)
+            draw_text(screen, "MP: " + str(old_clicked.Mana), font, blue, screen_width * 100/800, screen_height-bottom_panel + bottom_panel*2/5)
+            draw_text(screen, "Stamina: " + str(old_clicked.Stamina), font, black, screen_width * 100/800, screen_height-bottom_panel + bottom_panel*3/5)
+            draw_text(screen, "Movement: " + str(old_clicked.Movement), font, black, screen_width * 100/800, screen_height-bottom_panel + bottom_panel*4/5)
             img = pygame.image.load(f"pic/Full/{old_clicked.Name}.png").convert_alpha()
             draw_img(screen, pygame.transform.scale(img, (math.floor(img.get_width() * screen_height * 0.6/800), math.floor(img.get_height() * screen_height * 0.6/800))), (0, screen_height-bottom_panel))
-            draw_text(screen, "Attack damage: " + str(old_clicked.Atk_damage), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel/5)
-            draw_text(screen, "Attack range: " + str(old_clicked.Atk_range), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*2/5)
-            draw_text(screen, "Skill: " + str(old_clicked.Skill_name), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*3/5)
+            draw_text(screen, "Attack damage: " + str(old_clicked.Atk_damage), font, black, screen_width * 200/800, screen_height-bottom_panel + bottom_panel/5)
+            draw_text(screen, "Attack range: " + str(old_clicked.Atk_range), font, black, screen_width * 200/800, screen_height-bottom_panel + bottom_panel*2/5)
+            draw_text(screen, "Skill: " + str(old_clicked.Skill_name), font, black, screen_width * 200/800, screen_height-bottom_panel + bottom_panel*3/5)
 
             if old_clicked.Shield > 0:
-                draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*4/5)
-
+                draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, screen_width * 200/800, screen_height-bottom_panel + bottom_panel*4/5)
+                img = pygame.image.load("pic/Shield.png").convert_alpha()
+                draw_img(screen, img, (screen_width * 200/800, screen_height-bottom_panel + bottom_panel/5))
+            elif old_clicked.Invisible > 0:
+                img = pygame.image.load("pic/Invisible.png").convert_alpha()
+                draw_img(screen, img, (screen_width * 200 / 800, screen_height - bottom_panel + bottom_panel / 5))
+            elif old_clicked.Name == "Dancer":
+                img = pygame.image.load("pic/Nimble.png").convert_alpha()
+                draw_img(screen, img, (screen_width * 200 / 800, screen_height - bottom_panel + bottom_panel / 5))
         # Running queue
         char = fixed_queue[turn]
 
         # Set character display color
         if char.Team == 1:
-            draw_text(screen, f'Team {char.Team}', font, red, screen_width - 100, 0)
+            draw_text(screen, f'Team {char.Team}', pygame.font.SysFont('sfcartoonisthand', 20), black, 15, 15)
         else:
-            draw_text(screen, f'Team {char.Team}', font, blue, screen_width - 100, 0)
-        draw_text(screen, f'{char.Name}\'s turn', font, black, screen_width - 100, 30)
+            draw_text(screen, f'Team {char.Team}', pygame.font.SysFont('sfcartoonisthand', 20), black, 15, 15)
+        draw_text(screen, f'{char.Name}\'s turn', pygame.font.SysFont('sfcartoonisthand', 20), black, 15, 35)
 
         # if death then skip turn
         if char.HP <= 0:
@@ -542,7 +557,7 @@ while run:
                             print(clicked.indexX, clicked.indexY)
 
                             # storing to display selected character info.
-                            if clicked.resident is not None:
+                            if clicked.resident is not None and status != "move":
                                 old_clicked = clicked.resident
 
                                 if status == "attack":
@@ -558,7 +573,6 @@ while run:
                                             check.remove(clicked.resident)
                                             if clicked.resident in queue:
                                                 queue.remove(clicked.resident)
-                                    print(clicked.resident.HP)
 
                                 elif status == "skill":
                                     x = clicked.indexX
@@ -585,12 +599,8 @@ while run:
                                                 print(clicked.resident.HP)
                                         else:
                                             print('No ally in range')
-                                    elif char.name == "Trapper":
-                                        casted = True
-                                        status = None
+                                    elif char.Name == "Trapper":
                                         pass
-                                        # table_arr[x][y].resident =
-
                                     # Damaging skills
                                     else:
                                         if int(char.Team) == 1:
@@ -642,7 +652,7 @@ while run:
                                 x = clicked.indexX
                                 y = clicked.indexY
                                 if (x, y) in moveable:
-                                    if move(char, (y, x), table_arr):
+                                    if move(char, (y, x), table_arr, bomblist):
                                         if int(char.Team) == 1:
                                             check = char_info1
                                         else:
@@ -663,6 +673,19 @@ while run:
                                 eval(char.Skill_name + '(' + 'char, [y,x]' + ')')
                                 casted = True
                                 status = None
+
+                            elif char.Name == "Trapper" and status == "skill":
+                                x = clicked.indexX
+                                y = clicked.indexY
+                                if clicked.resident is None:
+                                    if char.Team == 1:
+                                        if trap(char, (x, y), table_arr, bomb1, screen, bomblist):
+                                            casted = True
+                                            status = None
+                                    elif char.Team == 2:
+                                        if trap(char, (x, y), table_arr, bomb2, screen, bomblist):
+                                            casted = True
+                                            status = None
 
                 # end current character's turn
                 if End_button.draw():

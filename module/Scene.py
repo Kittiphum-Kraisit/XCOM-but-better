@@ -7,8 +7,8 @@ from module.function import *
 
 # a function to choose characters for each player
 def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_number):
-    font = pygame.font.SysFont('Times New Roman', 14)
-    bigger_font = pygame.font.SysFont('Times New Roman', 24)
+    font = pygame.font.SysFont('sfcartoonisthand', 18)
+    bigger_font = pygame.font.SysFont('sfcartoonisthand', 28)
     white = (255, 255, 255)
     red = (255, 0, 0)
     blue = (0, 0, 255)
@@ -18,14 +18,20 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
     else:
         color = blue
     w, h = pygame.display.get_surface().get_size()
-    Next_butt = Button(screen, w - w/10, h - h/10, 80, 30,(196,196,196))
-    draw_text(screen, "Player " + str(scene_number-1) + " Select character", font, black, 370, 0)
+    Next_butt = Button(screen, w - w/10, h - h/10, 80, 30, white)
+    whiteBox = pygame.Rect((0, 0), (w, h*7/10))
+    scr = pygame.Surface((whiteBox.width, whiteBox.height))
+    scr.fill(white)
+    screen.blit(scr, (0, int(h/9)))
+
+
+    draw_text(screen, "Team " + str(scene_number-1) + " Select Characters", pygame.font.SysFont('sfcartoonisthand', 32), black, 250, 10)
     for i in range(10):
         if all_character_list[i].available:
             all_character_list[i].draw_image()
         elif not all_character_list[i].available:
             # pygame.draw.rect(screen, color, all_character_list[i].rect, 2)
-            box = pygame.image.load("pic/Character_Select.png")
+            box = pygame.image.load("pic/light.png")
             box = pygame.transform.scale(box, (all_character_list[i].rect.width + 20, all_character_list[i].rect.height + 20))
             draw_img(screen, box, (all_character_list[i].rect.x - 10, all_character_list[i].rect.y - 10))
             all_character_list[i].draw_image()
@@ -39,21 +45,21 @@ def choose_character_in_pygame(all_character_list, screen, list_of_team, scene_n
             print("Succ")
             return scene_number + 1
 
-        draw_text(screen, "Next ->", bigger_font, red, w - w/10, h - h/10)
+        draw_text(screen, "Next?", bigger_font, black, w - w/10, h - h/10)
 
     return scene_number
 
 
 def choose_equipment(char_list, equipment_list, screen, control):
-    font = pygame.font.SysFont('Times New Roman', 14)
-    bigger_font = pygame.font.SysFont('Times New Roman', 24)
+    font = pygame.font.SysFont('sfcartoonisthand', 18)
+    bigger_font = pygame.font.SysFont('sfcartoonisthand', 28)
     white = (255, 255, 255)
     red = (255, 0, 0)
     blue = (0, 0, 255)
     black = (0, 0, 0)
     w, h = pygame.display.get_surface().get_size()
     Next_butt = Button(screen, w - w / 10, h - h / 10, 80, 30, (196, 196, 196))
-    draw_text(screen, f"Team {char_list[control].Team}: Select equipment for {char_list[control].Name}", font, black, (w/2)-100, 0)
+    draw_text(screen, f"Team {char_list[control].Team}: Select equipment for {char_list[control].Name}", pygame.font.SysFont('sfcartoonisthand', 34), black, (w/2)-185, 0)
     im = pygame.image.load(f"pic/Full/{char_list[control].Name}.png")
     im = pygame.transform.scale(im, (math.floor(im.get_width() * 0.8),
                                 math.floor(im.get_height() * 0.8)))
@@ -69,7 +75,9 @@ def choose_equipment(char_list, equipment_list, screen, control):
             screen.blit(equipment_list[i].img, equipment_list[i].rect)
         else:
             screen.blit(equipment_list[i].img, equipment_list[i].rect)
-            pygame.draw.rect(screen, red, equipment_list[i].rect, 2)
+            # pygame.draw.rect(screen, red, equipment_list[i].rect, 2)
+            # pygame.image.load("pic/equip_select.png")
+            screen.blit(pygame.image.load("pic/equip_select.png"), (equipment_list[i].rect.x - 20, equipment_list[i].rect.y - 15))
             draw_text(screen, f"Weapon: {equipment_list[i].name}", bigger_font, black, (w/2) - 300, (h/2) + 200)
             draw_text(screen, f"Effect: {equipment_list[i].description}", bigger_font, black, (w / 2) - 300, (h / 2) + 230)
     if char_list[control].equip is not None:
