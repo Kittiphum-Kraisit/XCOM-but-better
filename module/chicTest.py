@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from module.function import bomb
 import sys
 import math
 
@@ -24,13 +25,14 @@ class grid():
         self.obstacle = False
         self.trap = None
 
-    def drawcell(self, surface):
+    def drawcell(self, surface, color=(222, 255, 195)):
         # draw a cell on surface
-        color2 = pygame.Color(221, 185, 247)
-        pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.rangeX, self.positionY), 5)
-        pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.positionX, self.rangeY), 5)
-        pygame.draw.line(surface, color2, (self.rangeX, self.positionY), (self.rangeX, self.rangeY), 5)
-        pygame.draw.line(surface, color2, (self.positionX, self.rangeY), (self.rangeX, self.rangeY), 5)
+        color2 = pygame.Color(0, 0, 0)
+        pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.rangeX, self.positionY), 1)
+        pygame.draw.line(surface, color2, (self.positionX, self.positionY), (self.positionX, self.rangeY), 1)
+        pygame.draw.line(surface, color2, (self.rangeX, self.positionY), (self.rangeX, self.rangeY), 1)
+        pygame.draw.line(surface, color2, (self.positionX, self.rangeY), (self.rangeX, self.rangeY), 1)
+        self.highlight(surface, color)
 
     def addpic(self, picname, surface, index, team):
         # create new image on input position
@@ -42,7 +44,7 @@ class grid():
             sc = pygame.Surface((math.floor(self.rect.width-4.5), math.floor(self.rect.height-4.5)))
             sc.fill((255, 0, 0))
             surface.blit(sc, (self.positionX+3, self.positionY+3))
-        else:
+        if team == 2:
             sc = pygame.Surface((math.floor(self.rect.width-4.5), math.floor(self.rect.height-4.5)))
             sc.fill((0, 0, 255))
             surface.blit(sc, (self.positionX+3, self.positionY+3))
@@ -71,19 +73,20 @@ class grid():
 
 def fillflush(x, y, range, table, surface, arr):
     # x, y = position
-    if table[y][x].resident == None:
+    if (table[y][x].resident == None) or (isinstance(table[y][x].resident, bomb)):
         table[y][x].highlight(surface, (0, 204, 0, 50))
         arr.append((y, x))
+        
     if range <= 0:
         return y, x
     # if x + 1 < len(table) and y + 1 < len(table[0]) and x - 1 > 0 and y - 1 > 0:
-    if y + 1 < len(table) and table[y+1][x].resident is None:
+    if (y + 1 < len(table) and table[y+1][x].resident is None) or (y + 1 < len(table) and isinstance(table[y][x].resident, bomb)):
         fillflush(x, y+1, range-1, table, surface, arr)
-    if x + 1 < len(table[0]) and table[y][x+1].resident is None:
+    if (x + 1 < len(table[0]) and table[y][x+1].resident is None) or (x + 1 < len(table[0]) and isinstance(table[y][x].resident, bomb)):
         fillflush(x+1, y, range-1, table, surface, arr)
-    if y - 1 >= 0 and table[y-1][x].resident is None:
+    if (y - 1 >= 0 and table[y-1][x].resident is None) or (y - 1 >= 0 and isinstance(table[y][x].resident, bomb)):
         fillflush(x, y-1, range-1, table, surface, arr)
-    if x - 1 >= 0 and table[y][x-1].resident is None:
+    if (x - 1 >= 0 and table[y][x-1].resident is None) or (x - 1 >= 0 and isinstance(table[y][x].resident, bomb)):
         fillflush(x-1, y, range-1, table, surface, arr)
     return arr
 
@@ -94,20 +97,20 @@ def setrange(char, table, surface, type):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
                 if ran <= char.Stamina and table[x][y].resident == None:
-                    table[x][y].highlight(surface, (0, 204, 0, 50))  # prev. (128, 0, 0, 50)
+                    table[x][y].highlight(surface, (165, 250, 162))  # prev. (128, 0, 0, 50)
 
     elif type == "attack":
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
                 if ran <= char.Atk_range and table[x][y].resident == None:
-                    table[x][y].highlight(surface, (255, 255, 0, 50))  # prev. (255, 192, 203, 50)
+                    table[x][y].highlight(surface, (255, 173, 173))  # prev. (255, 192, 203, 50)
     elif type == "skill":
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
                 if ran <= char.Skill_range and table[x][y].resident == None:
-                    table[x][y].highlight(surface, (255, 153, 0, 50))  # prev. (153, 204, 255, 50)
+                    table[x][y].highlight(surface, (162, 250, 240))  # prev. (153, 204, 255, 50)
 
 
 def charsetup(charlist, surface, table):
@@ -116,13 +119,20 @@ def charsetup(charlist, surface, table):
         table[x][y].resident = charlist[i]
         table[x][y].addpic(charlist[i].Icon, surface, (x, y), charlist[i].Team)
 
+def bombsetup(bomblist, surface, table):
+        for i in range(len(bomblist)):
+            y, x = bomblist[i].position
+            table[x][y].resident = bomb(x,y)
+            table[x][y].addpic(pygame.image.load('pic/Trap.png'), surface, (x, y), 0)
+
+
 
 def queuesetup(queue, surface, queuetable):
     for i in range(len(queue)):
         queuetable[i][0].addpic(queue[i].Icon, surface, (i, 0), queue[i].Team)
 
 
-def drawtable(tableX, tableY, top_left, bottom_right, surface):
+def drawtable(tableX, tableY, top_left, bottom_right, surface, table_type='table'):
     # draw the table on the display surface
     # parameter (the number of cell you want in each direction, pixel position of top_left of table, pixel position of bottom_right of table)
     big_table = []
@@ -136,21 +146,15 @@ def drawtable(tableX, tableY, top_left, bottom_right, surface):
         row = []
     for i in range(len(big_table)):
         for l in range(len(big_table[i])):
-            big_table[i][l].drawcell(surface)
+            if table_type != 'table':
+                if i + l == 0:
+                    big_table[i][l].drawcell(surface, (255, 248, 64))
+                else:
+                    big_table[i][l].drawcell(surface, (255, 227, 183))
+            else:
+                big_table[i][l].drawcell(surface)
     return big_table
 
-
-def drawqueue(table, top_left, bottom_right, surface):
-    # draw the table on the display surface
-    # parameter (the number of cell you want in each direction, pixel position of top_left of table, pixel position of bottom_right of table)
-    row = []
-    tl_x, tl_y = top_left
-    br_x, br_y = bottom_right
-    for i in range(table):
-        row.append(grid((tl_x + (i * (abs(tl_x-br_x)/table)), tl_y), (abs(tl_x-br_x)/table, abs(br_y-tl_y)), (0, i)))
-    for l in range(len(row)):
-        row[l].drawcell(surface)
-    return row
 
 def setMap(table, obsPos, surface, obsPic):
     for i in range(len(obsPos)):
@@ -158,7 +162,6 @@ def setMap(table, obsPos, surface, obsPic):
         table[y][x].resident = "obstacle"
         table[y][x].obstacle = True
         table[y][x].addpic(obsPic, surface, (x, y), 1)
-
 
 
 if __name__ == "__main__":
