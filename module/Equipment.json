@@ -1,0 +1,59 @@
+{
+  "0": {
+    "name": "Vampire Knife",
+    "description": "heal 30% from normal attacking",
+    "type":"attack",
+    "image": "knife.png",
+    "ability": "vampire_knife"
+  },
+  "1": {
+    "name": "Unstoppable Sword",
+    "description": "Gain additional 10 attack damage",
+    "type": "once",
+    "image": "sword.png",
+    "ability": "unstoppable_sword"
+  },
+  "2": {
+    "name": "Immovable Armor",
+    "description": "Gain damage reduction from normal attack by 10",
+    "type": "defend",
+    "image": "armor.png",
+    "ability": "immovable_armor"
+  },
+  "3": {
+    "name": "Vitality Shot",
+    "description": "Recover 10 HP at the end of your turn",
+    "type": "utility",
+    "image": "stim.png",
+    "ability": "stim"
+  },
+  "4": {
+    "name": "Mana battery",
+    "description": "Recover 5 MP at the end of your turn",
+    "type": "utility",
+    "image": "battery.png",
+    "ability": "battery"
+  },
+  "5": {
+    "name": "Lighting shoes",
+    "description": "Move range are increased by 2",
+    "type": "once",
+    "image": "shoe.png",
+    "ability": "shoes"
+  },
+  "6": {
+    "name": "ACOG Scope",
+    "description": "Increase attack range by 1",
+    "type": "once",
+    "image": "scope.png",
+    "ability": "scope"
+  },
+  "7": {
+    "name": "Smart visor",
+    "description": "Increase chance to go first for each rounds",
+    "type": "once",
+    "image": "glass.png",
+    "ability": "visor"
+  }
+
+}
