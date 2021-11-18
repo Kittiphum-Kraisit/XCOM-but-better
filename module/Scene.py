@@ -59,7 +59,11 @@ def choose_equipment(char_list, equipment_list, screen, control):
     black = (0, 0, 0)
     w, h = pygame.display.get_surface().get_size()
     Next_butt = Button(screen, w - w / 10, h - h / 10, 80, 30, (196, 196, 196))
-    draw_text(screen, f"Team {char_list[control].Team}: Select equipment for {char_list[control].Name}", pygame.font.SysFont('sfcartoonisthand', 34), black, (w/2)-185, 0)
+    white_box = pygame.Rect((0, 0), (w, h * 4 / 10))
+    scr = pygame.Surface((white_box.width, white_box.height))
+    scr.fill(white)
+    screen.blit(scr, (0, int(h / 2.8)))
+    draw_text(screen, f"Team {char_list[control].Team}: Select equipment for {char_list[control].Name}", pygame.font.SysFont('sfcartoonisthand', 34), black, (w/2)-185, 10)
     im = pygame.image.load(f"pic/Full/{char_list[control].Name}.png")
     im = pygame.transform.scale(im, (math.floor(im.get_width() * 0.8),
                                 math.floor(im.get_height() * 0.8)))
@@ -72,9 +76,9 @@ def choose_equipment(char_list, equipment_list, screen, control):
     draw_text(screen, f"Stamina: {char_list[control].Stamina}", bigger_font, black, (w / 2) - 80, (h / 2) - 150)
     for i in range(8):
         if not equipment_list[i].clicked:
-            screen.blit(equipment_list[i].img, equipment_list[i].rect)
+            screen.blit(equipment_list[i].img, (equipment_list[i].rect.x, equipment_list[i].rect.y))
         else:
-            screen.blit(equipment_list[i].img, equipment_list[i].rect)
+            screen.blit(equipment_list[i].img, (equipment_list[i].rect.x, equipment_list[i].rect.y))
             # pygame.draw.rect(screen, red, equipment_list[i].rect, 2)
             # pygame.image.load("pic/equip_select.png")
             screen.blit(pygame.image.load("pic/equip_select.png"), (equipment_list[i].rect.x - 20, equipment_list[i].rect.y - 15))

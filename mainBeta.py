@@ -93,10 +93,10 @@ for i in range(5, 10):
     c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * (i - 5)), (screen_height-bottom_panel) * 475/700, i, screen_height))
 for i in range(0, 4):
     equipments.append(init_equipment(i))
-    equipments[i].rect.center = ((screen_width*150/800) * 2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) - 250)
+    equipments[i].rect.center = ((screen_width*150/800) * 1.25 + (screen_width*150/800 * i), (screen_height-bottom_panel) - 250)
 for i in range(4, 8):
     equipments.append(init_equipment(i))
-    equipments[i].rect.center = (((screen_width*150/800) * 2/3 + (screen_width*150/800 * (i - 4))), (screen_height-bottom_panel) - 100)
+    equipments[i].rect.center = (((screen_width*150/800) * 1.25 + (screen_width*150/800 * (i - 4))), (screen_height-bottom_panel) - 100)
 
 run = True
 scene = 1
@@ -301,13 +301,13 @@ while run:
             if old_clicked.Shield > 0:
                 draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, screen_width * 200/800, screen_height-bottom_panel + bottom_panel*4/5)
                 img = pygame.image.load("pic/Shield.png").convert_alpha()
-                draw_img(screen, img, (screen_width * 200/800, screen_height-bottom_panel + bottom_panel/5))
+                draw_img(screen, img, (screen_width * 350/800, screen_height-bottom_panel + bottom_panel/5))
             elif old_clicked.Invisible > 0:
                 img = pygame.image.load("pic/Invisible.png").convert_alpha()
-                draw_img(screen, img, (screen_width * 200 / 800, screen_height - bottom_panel + bottom_panel / 5))
+                draw_img(screen, img, (screen_width * 350 / 800, screen_height - bottom_panel + bottom_panel / 5))
             elif old_clicked.Name == "Dancer":
                 img = pygame.image.load("pic/Nimble.png").convert_alpha()
-                draw_img(screen, img, (screen_width * 200 / 800, screen_height - bottom_panel + bottom_panel / 5))
+                draw_img(screen, img, (screen_width * 350 / 800, screen_height - bottom_panel + bottom_panel / 5))
         # Running queue
         char = fixed_queue[turn]
 
