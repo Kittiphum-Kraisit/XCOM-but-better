@@ -96,20 +96,20 @@ def setrange(char, table, surface, type):
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
-                if ran <= char.Stamina and table[x][y].resident == None:
+                if ran <= char.Stamina and table[x][y].resident is None:
                     table[x][y].highlight(surface, (165, 250, 162))  # prev. (128, 0, 0, 50)
 
     elif type == "attack":
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
-                if ran <= char.Atk_range and table[x][y].resident == None:
+                if ran <= char.Atk_range and table[x][y].resident is None:
                     table[x][y].highlight(surface, (255, 173, 173))  # prev. (255, 192, 203, 50)
     elif type == "skill":
         for y in range(len(table)):
             for x in range(len(table[y])):
                 ran = abs(char.Position[0] - table[y][x].indexX) + abs(char.Position[1] - table[y][x].indexY)
-                if ran <= char.Skill_range and table[x][y].resident == None:
+                if ran <= char.Skill_range and table[x][y].resident is None:
                     table[x][y].highlight(surface, (162, 250, 240))  # prev. (153, 204, 255, 50)
 
 
@@ -120,11 +120,10 @@ def charsetup(charlist, surface, table):
         table[x][y].addpic(charlist[i].Icon, surface, (x, y), charlist[i].Team)
 
 def bombsetup(bomblist, surface, table):
-        for i in range(len(bomblist)):
-            y, x = bomblist[i].position
-            table[x][y].resident = bomb(x,y)
-            table[x][y].addpic(pygame.image.load('pic/Trap.png'), surface, (x, y), 0)
-
+    for i in range(len(bomblist)):
+        y, x = bomblist[i].position
+        table[x][y].resident = bomb(x,y)
+        table[x][y].addpic(pygame.image.load('pic/Trap.png'), surface, (x, y), 0)
 
 
 def queuesetup(queue, surface, queuetable):

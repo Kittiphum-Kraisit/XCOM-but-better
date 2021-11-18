@@ -81,8 +81,8 @@ def line_of_sight(char, enemies, obstacles):
                     print(enemy)
                     attackable.remove(enemy)
                     break
-        continue
         print(bug)
+        continue
     for i in attackable:
         print(i.Name)
     return attackable
@@ -131,7 +131,7 @@ def charmove(char, new_index, old_index, table, surface, bomblist=None):
         x, y = new_index
         x1, y1 = old_index
         char.position = (x, y)
-        if table[x][y].resident != None and type(table[x][y].resident) != str and table[x][y].resident.name == "bomb":
+        if table[x][y].resident is not None and type(table[x][y].resident) != str and table[x][y].resident.name == "bomb":
             char.HP -= 50
             for i in range(len(bomblist)):
                 if bomblist[i].position == (x, y):
@@ -149,7 +149,7 @@ def move(char, destination, table, bomblist):
         char.Stamina -= check
         lst = []
         print(lst)
-        if table[y][x].resident != None and type(table[y][x].resident) != str and table[y][x].resident.Name == "bomb":
+        if table[y][x].resident is not None and type(table[y][x].resident) != str and table[y][x].resident.Name == "bomb":
             char.HP -= 50
             for i in range(len(bomblist)):
                 if bomblist[i].position == (x, y):
