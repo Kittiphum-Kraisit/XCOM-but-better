@@ -3,6 +3,7 @@ from pygame.locals import *
 import sys
 import math
 
+
 class grid():
     # create grid class object
     def __init__(self, position, dimension, index):
@@ -150,6 +151,14 @@ def drawqueue(table, top_left, bottom_right, surface):
     for l in range(len(row)):
         row[l].drawcell(surface)
     return row
+
+def setMap(table, obsPos, surface, obsPic):
+    for i in range(len(obsPos)):
+        x, y = obsPos[i]
+        table[y][x].resident = "obstacle"
+        table[y][x].obstacle = True
+        table[y][x].addpic(obsPic, surface, (x, y), 1)
+
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import math
 import random
+from module.Equipment import Equipment
 
 
 # check the attack range
@@ -28,7 +29,7 @@ def LoS(char_atk, char_list, table):
     for y in range(len(table)):
         for x in range(len(table[y])):
             ran = abs(char_atk.Position[0] - table[y][x].indexX) + abs(char_atk.Position[1] - table[y][x].indexY)
-            if ran <= char_atk.Atk_range and table[y][x].obstacle == True:
+            if ran <= char_atk.Atk_range and table[y][x].resident == "obstacle":
                 obstacles.append((y, x))
     print("1st", obstacles)
     for i in enemies:
@@ -60,7 +61,7 @@ def line_of_sight(char, enemies, obstacles):
 
 
 # check the skill range
-def skill_range_check(caster,char_list):
+def skill_range_check(caster, char_list):
     char_in_range = []
     for char in char_list:
         check = range_check(char, caster)
@@ -71,18 +72,25 @@ def skill_range_check(caster,char_list):
 
 # reduce shield or hp
 def attack(char_atk, char_def):
+    atk_power = char_atk.Atk_damage
+    if char_atk.equip.type == "attack":
+        method_to_call = getattr(Equipment, char_atk.equip.ability)
+        method_to_call(char_atk.equip, char_atk)
+    if char_def.equip.type == "defend":
+        method_to_call = getattr(Equipment, char_def.equip.ability)
+        atk_power = method_to_call(char_def.equip, atk_power)
     check = range_check(char_atk, char_def)
     if check <= char_atk.Atk_range:
         if check_shield(char_def):
-            char_def.Shield -= char_atk.Atk_damage
+            char_def.Shield -= atk_power
             if char_def.Shield < 0:
                 char_def.HP += char_def.Shield
                 char_def.Shield = 0
         elif char_def.Name == 'Dancer':
             if nimble(char_def) is False:
-                char_def.HP -= char_atk.Atk_damage
+                char_def.HP -= atk_power
         else:
-            char_def.HP -= char_atk.Atk_damage
+            char_def.HP -= atk_power
         return True
     else:
         return False
@@ -161,8 +169,8 @@ def under_barrel(char_atk, char_def):
         if shield_skill(char_atk, char_def):
             char_def.HP -= char_atk.Skill_damage
         elif char_def.Name == 'Dancer':
-          if nimble(char_def) == False:
-            char_def.HP -= char_atk.Skill_damage
+            if nimble(char_def) is False:
+                char_def.HP -= char_atk.Skill_damage
         mana_reduce(char_atk)
     else:
         return False
@@ -175,8 +183,8 @@ def critical_shot(char_atk, char_def):
         if shield_skill(char_atk, char_def):
             char_def.HP -= char_atk.Skill_damage
         elif char_def.Name == 'Dancer':
-          if nimble(char_def) == False:
-            char_def.HP -= char_atk.Skill_damage
+            if nimble(char_def) is False:
+                char_def.HP -= char_atk.Skill_damage
         mana_reduce(char_atk)
     else:
         return False
@@ -184,11 +192,11 @@ def critical_shot(char_atk, char_def):
 
 # Dancer skill
 def nimble(char):
-  chance = random.randint(0, 100)
-  if chance > char.Skill_damage:
-    return False
-  else:
-    return True
+    chance = random.randint(0, 100)
+    if chance > char.Skill_damage:
+        return False
+    else:
+        return True
 
 
 # Sheriff skill
@@ -199,8 +207,8 @@ def high_noon(char_atk, char_def_list):
         if shield_skill(char_atk, target):
             target.HP -= char_atk.Skill_damage
         elif target.Name == 'Dancer':
-          if nimble(target) == False:
-            target.HP -= char_atk.Skill_damage
+            if nimble(target) is False:
+                target.HP -= char_atk.Skill_damage
         print(target.HP)
     mana_reduce(char_atk)
 
@@ -210,12 +218,12 @@ def salvation(char_atk, char_def, current_ally):
     death = 5 - current_ally
     check = range_check(char_atk, char_def)
     if check <= char_atk.Skill_range:
-        damage = (char_atk.Skill_damage) + (10 * death)
+        damage = char_atk.Skill_damage + (10 * death)
         if shield_skill(char_atk, char_def, damage):
-            char_def.HP -= (char_atk.Skill_damage) + (10 * death)
+            char_def.HP -= char_atk.Skill_damage + (10 * death)
         elif char_def.Name == 'Dancer':
-          if nimble(char_def) == False:
-            char_def.HP -= damage
+            if nimble(char_def) is False:
+                char_def.HP -= damage
         mana_reduce(char_atk)
     else:
         return False
@@ -230,8 +238,8 @@ def heal(healer, patient):
 
 # Reset every turn
 def reset_stamina(chars):
-  for character in chars:
-    character.Stamina = character.Movement
+    for character in chars:
+        character.Stamina = character.Movement
 
 
 # Shield
@@ -247,7 +255,7 @@ def check_shield(char):
     return False
 
 
-# Battlemage skill
+# Battle mage skill
 def shield_skill(char_atk, char_def, dmg = 0):
     if check_shield(char_def):
         if dmg != 0:

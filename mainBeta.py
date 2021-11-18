@@ -1,12 +1,14 @@
 import math
 import pygame
 import random
+import inspect
 from pygame import mixer
 from module.button import Button, draw_text, draw_bg, draw_img
 from module.Character import choose_char, obj_char_create
-from module.Scene import choose_character_in_pygame, blit_rotate
+from module.Scene import choose_character_in_pygame, blit_rotate, choose_equipment
 from module.function import *
 from module.chicTest import *
+from module.Equipment import *
 
 # Init pygame
 pygame.init()
@@ -51,9 +53,8 @@ class char_card:
         self.scale = scale
         self.info = obj_char_create(str(self.id), 0)
         img = pygame.image.load(f'pic/Full/{self.info.Name}.png').convert_alpha()
-        self.image = pygame.transform.scale(img,
-                                            (math.floor(img.get_width() * scale * 0.6/800), math.floor(img.get_height() * scale * 0.6/800))
-                                            )
+        self.image = pygame.transform.scale(img, (math.floor(img.get_width() * scale * 0.6/800),
+                                                  math.floor(img.get_height() * scale * 0.6/800)))
         self.x = x
         self.y = y
         self.available = True
@@ -80,12 +81,20 @@ queue = []
 c = []
 cc_team1 = []
 cc_team2 = []
+equipments = []
 count = 0
+control = 0
 
 for i in range(0, 5):
     c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) * 150/700, i, screen_height))
 for i in range(5, 10):
     c.append(char_card((screen_width*150/800)*2/3 + (screen_width*150/800 * (i - 5)), (screen_height-bottom_panel) * 425/700, i, screen_height))
+for i in range(0, 4):
+    equipments.append(init_equipment(i))
+    equipments[i].rect.center = ((screen_width*150/800) * 2/3 + (screen_width*150/800 * i), (screen_height-bottom_panel) - 250)
+for i in range(4, 8):
+    equipments.append(init_equipment(i))
+    equipments[i].rect.center = (((screen_width*150/800) * 2/3 + (screen_width*150/800 * (i - 4))), (screen_height-bottom_panel) - 100)
 
 run = True
 scene = 1
@@ -99,7 +108,6 @@ initposition2 = []
 status = "None"
 table_arr = []
 start_point = None
-
 while run:
     screen.fill((220, 254, 254))
     if scene == 1:
@@ -115,7 +123,30 @@ while run:
     elif scene == 3:
         # Character selection team2
         scene = choose_character_in_pygame(c, screen, cc_team2, 3)
-
+        if scene == 4:
+            scene = 9
+    elif scene == 9:
+        # choose equipment for team 1
+        if control < 5:
+            control = choose_equipment(char_info1, equipments, screen, control)
+        if control == 5:
+            control = 0
+            for i in char_info1:
+                if i.equip.type == "once":
+                    method_to_call = getattr(Equipment, i.equip.ability)
+                    result = method_to_call(i.equip, i)
+            scene = 10
+    elif scene == 10:
+        # choose equipment for team 2
+        if control < 5:
+            control = choose_equipment(char_info2, equipments, screen, control)
+        if control == 5:
+            control = 0
+            for i in char_info2:
+                if i.equip.type == "once":
+                    method_to_call = getattr(Equipment, i.equip.ability)
+                    result = method_to_call(i.equip, i)
+            scene = 4
     elif scene == 4:
         # Char select start position with UI for team 1
         draw_text(screen, "Team 1 set position: ", font, black, screen_width/2, screen_height/1000)
@@ -156,6 +187,21 @@ while run:
         start_time = pygame.time.get_ticks()
         angle = 0
 
+        daBox = pygame.image.load("pic/box.png")
+
+        map1 = [(8, 2), (7, 2), (6, 2), (0, 3), (3, 4), (4, 4), (5, 4), (6, 4), (8, 6), (9, 6), (1, 7), (2, 7), (3, 7)]
+        map2 = [(0, 5), (1, 2), (1, 5), (2, 2), (2, 7), (3, 7), (4, 1), (4, 3), (4, 5), (4, 7), (5, 2), (5, 4), (5, 6), (5, 8), (6, 4), (7, 4), (7, 6), (8, 2), (8, 6), (9, 2)]
+        map3 = [(2, 2), (2, 4), (2, 5), (2, 6), (2, 7), (3, 2), (4, 2), (4, 4), (4, 7), (5, 2), (5, 5), (5, 7), (6, 7), (7, 2), (7, 3), (7, 4), (7, 5), (7, 7)]
+
+        haha = random.randint(1, 3)
+        if haha == 1:
+            selected = map1
+        elif haha == 2:
+            selected = map2
+        elif haha == 3:
+            selected = map3
+
+
         # End scene
         if len(start2) == 5:
             scene = 6
@@ -166,8 +212,7 @@ while run:
         # screen.fill(0)
         draw_img(screen, pygame.image.load("pic/Roll_Bg.png"), (0, 0))
         # draw_text(screen, "Rolling Characters speed", bigger_font, black, ((screen_width // 2) - 100), 150)
-        blit_rotate(screen, pygame.image.load("pic/new_Dice.png"), (((screen_width // 2) - 350), (screen_height // 4) + 55),3,
-                    angle)
+        blit_rotate(screen, pygame.image.load("pic/new_Dice.png"), (((screen_width // 2) - 100), (screen_height // 4) + 130), 3, angle)
         angle += 1
         pygame.display.flip()
         if elapsed >= 3000:
@@ -222,6 +267,7 @@ while run:
             mixer.Channel(1).play(pygame.mixer.Sound("audio/FightMusic.mp3"))
         # Draw table, queue
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800, screen_height*535/700), screen)
+        setMap(table_arr, selected, screen, daBox)
         queue_table = drawtable(10, 1, (screen_width*120/800, screen_height*10/700), (screen_width*620/800, screen_height*60/700), screen)
         charsetup(char_info1, screen, table_arr)
         charsetup(char_info2, screen, table_arr)
@@ -232,7 +278,7 @@ while run:
         draw_img(screen, arrow_img, (130, -15))
         draw_img(screen, pygame.image.load("pic/queue/queue.png"), (20, 20))
         # Display character info. when selected
-        if old_clicked is not False:
+        if old_clicked is not False and inspect.isclass(old_clicked):
             draw_text(screen, old_clicked.Name, font, black, screen_width * 150/800, screen_height-bottom_panel)
             draw_text(screen, "HP: " + str(old_clicked.HP), font, red, screen_width * 150/800, screen_height-bottom_panel + bottom_panel/5)
             draw_text(screen, "MP: " + str(old_clicked.Mana), font, blue, screen_width * 150/800, screen_height-bottom_panel + bottom_panel*2/5)
@@ -246,8 +292,6 @@ while run:
 
             if old_clicked.Shield > 0:
                 draw_text(screen, "Shield: " + str(old_clicked.Shield), font, black, screen_width * 300/800, screen_height-bottom_panel + bottom_panel*4/5)
-
-
 
         # Running queue
         char = fixed_queue[turn]
@@ -275,6 +319,7 @@ while run:
             draw_img(screen, pygame.image.load('pic/Buttons/Attack.png'), (screen_width*500/800, screen_height*550/700))
         else:
             draw_img(screen, pygame.image.load('pic/Buttons/Attack_pressed.png'), (screen_width*500/800, screen_height*550/700))
+
         Move_button = Button(screen, screen_width*500/800, screen_height*620/700, 100, 50)
         if char.Stamina > 0:
             draw_img(screen, pygame.image.load('pic/Buttons/Move.png'), (screen_width*500/800, screen_height*620/700))
@@ -305,8 +350,6 @@ while run:
             else:
                 print('No target in range')
             print("ATK")
-
-
 
         # if Move button is pressed
         if Move_button.draw():
@@ -417,6 +460,36 @@ while run:
                         char_info2 = choose_char(cc_team2, 2)
                         print(char_info2)
 
+            if scene == 9:
+                pos = pygame.mouse.get_pos()
+                # Detect collision with equipment image
+                for i in range(0, 8):
+                    if equipments[i].rect.collidepoint(pos):
+                        if char_info1[control].equip is None:
+                            equipments[i].clicked = True
+                            char_info1[control].equip = equipments[i]
+                        else:
+                            equipments[i].clicked = True
+                            char_info1[control].equip = equipments[i]
+                            for j in range(8):
+                                if equipments[j].name != char_info1[control].equip.name:
+                                    equipments[j].clicked = False
+
+            if scene == 10:
+                pos = pygame.mouse.get_pos()
+                # Detect collision with equipment image
+                for i in range(0, 8):
+                    if equipments[i].rect.collidepoint(pos):
+                        if char_info2[control].equip is None:
+                            equipments[i].clicked = True
+                            char_info2[control].equip = equipments[i]
+                        else:
+                            equipments[i].clicked = True
+                            char_info2[control].equip = equipments[i]
+                            for j in range(8):
+                                if equipments[j].name != char_info2[control].equip.name:
+                                    equipments[j].clicked = False
+
             # Select start position team1
             if scene == 4:
 
@@ -512,6 +585,11 @@ while run:
                                                 print(clicked.resident.HP)
                                         else:
                                             print('No ally in range')
+                                    elif char.name == "Trapper":
+                                        casted = True
+                                        status = None
+                                        pass
+                                        # table_arr[x][y].resident =
 
                                     # Damaging skills
                                     else:
@@ -593,6 +671,9 @@ while run:
                     casted = False
                     status = None
                     test = True
+                    if char.equip.type == "utility":
+                        method_to_call = getattr(Equipment, char.equip.ability)
+                        method_to_call(char.equip, char)
                     queue.remove(char)
                     # if the turn is equal/greater than current queue -> go back to roll initial speed scene
                     if turn >= len(fixed_queue):
