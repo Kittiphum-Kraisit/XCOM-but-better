@@ -5,26 +5,29 @@ import pygame
 f = open('module/characters.json', )
 data = json.load(f)
 
+
 # a class for Characters
 class Character:
-    def __init__(self, name, HP, Mana, Sta, Atk_dam, Atk_ran, Skl_name, Skl_dam, Skl_ran, Cost, Spd, team):
+    def __init__(self, name, hp, mana, sta, atk_dam, atk_ran, skl_name, skl_dam, skl_ran, cost, spd, team):
         self.Name = name
-        self.HP = HP
-        self.Max_HP = HP
-        self.Mana = Mana
-        self.Max_Mana = Mana
-        self.Movement = Sta
-        self.Stamina = Sta
-        self.Atk_damage = Atk_dam
-        self.Atk_range = Atk_ran
-        self.Skill_name = Skl_name
-        self.Skill_damage = Skl_dam
-        self.Skill_range = Skl_ran
-        self.Cost = Cost
-        self.Speed = Spd
+        self.HP = hp
+        self.Max_HP = hp
+        self.Mana = mana
+        self.Max_Mana = mana
+        self.Movement = sta
+        self.Stamina = sta
+        self.Atk_damage = atk_dam
+        self.Atk_range = atk_ran
+        self.Skill_name = skl_name
+        self.Skill_damage = skl_dam
+        self.Skill_range = skl_ran
+        self.Cost = cost
+        self.Speed = spd
         self.Team = team
         self.Invisible = 0
         self.Shield = 0
+        self.CurrSpeed = 0
+        self.Position = 0
         path = f"pic/Icon/{name}.png"
         self.Icon = pygame.image.load(path)
         self.equip = None
@@ -41,6 +44,7 @@ class Character:
     def __str__(self):
         return str(self.Team)
 
+
 # create an instance of Character
 def obj_char_create(n, team):
     return Character(data[n]['name'], data[n]['health'], data[n]['mana'],
@@ -48,6 +52,7 @@ def obj_char_create(n, team):
                      data[n]['atk_range'], data[n]['skill_name'],
                      data[n]['skill_damage'], data[n]['skill_range'],
                      data[n]['mana_cost'], data[n]['speed'], team)
+
 
 # Create 5 characters and assign them to a team
 def choose_char(a, team):

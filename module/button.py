@@ -2,7 +2,7 @@ import pygame
 
 
 # button class
-class Button():
+class Button:
 	def __init__(self, surface, x, y, size_x, size_y, color=None):
 		self.rect = pygame.Rect((x, y), (size_x, size_y))
 		self.rect.topleft = (x, y)
@@ -20,7 +20,7 @@ class Button():
 
 		# check mouseover and clicked conditions
 		if self.rect.collidepoint(pos):
-			if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+			if pygame.mouse.get_pressed()[0] == 1 and self.clicked is False:
 				action = True
 				self.clicked = True
 
@@ -35,14 +35,17 @@ class Button():
 
 		return action
 
+
 # draw text on screen
 def draw_text(surface, text, font, text_col, x, y):
 	img = font.render(text, True, text_col)
 	surface.blit(img, (x, y))
 
+
 # draw button on screen
 def draw_img(surface, image, position):
 	surface.blit(image, position)
+
 
 # draw background of the screen
 def draw_bg(surface, background_img):
