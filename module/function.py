@@ -270,7 +270,6 @@ def trap(char, place, table, trap_pic, surface, bomb_list):
     print(check)
     print(char.Skill_range)
     if check <= char.Skill_range:
-        print(1)
         mana_reduce(char)
         new_bomb = Bomb(place2[0], place2[1])
         table[place2[0]][place2[1]].resident = new_bomb

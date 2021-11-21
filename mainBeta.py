@@ -622,6 +622,10 @@ while run:
                             elif status == "move":
                                 if (x, y) in moveable:
                                     if move(char, (y, x), table_arr, bomb_list):
+                                        if check_death(char):
+                                            check.remove(char)
+                                            if char in queue:
+                                                queue.remove(char)
                                         if int(char.Team) == 1:
                                             check = char_info1
                                         else:
