@@ -13,17 +13,10 @@ from module.Equipment import *
 # Init pygame
 pygame.init()
 pygame.mixer.init()
-# Type 1
-# bg_music = pygame.mixer.Sound("audio/rex.mp3")
-# bg_music.set_volume(0.7)
-# bg_music.play()
-# Type 2
-# mixer.music.load("audio/rex.mp3")
 mixer.music.set_volume(0.7)
 mixer.Channel(0).play(pygame.mixer.Sound("audio/MainMenuSound.mp3"))
 clock = pygame.time.Clock()
 fps = 60
-test = True
 
 # Screen setting
 screen_width = 800  # 1280 # 800
@@ -44,6 +37,8 @@ blue = (0, 0, 255)
 
 # Images
 background_img = pygame.image.load('pic/black.jpg').convert_alpha()
+bomb1 = pygame.image.load('pic/Trap_team1.png')
+bomb2 = pygame.image.load('pic/Trap_team2.png')
 
 
 # pygame object
@@ -77,26 +72,26 @@ class CharCard:
 
 
 # Game parameters
-t1, t2 = [], []
-init1, init2 = [], []
-start1, start2 = [], []
+init1, init2 = [], []  # initial speed team 1,2
+start1, start2 = [], []  # start point team 1,2
 queue = []
 
 bomb_list = []
 
-c = []
-cc_team1 = []
-cc_team2 = []
-equipments = []
+c = []  # all character cards
+cc_team1, cc_team2 = [], []  # character cards team 1,2
+equipments = []  # all equipments
 count = 0
 control = 0
 
+# set character cards
 for i in range(0, 5):
     c.append(CharCard((screen_width * 150 / 800) * 2 / 3 + (screen_width * 150 / 800 * i),
                       (screen_height - bottom_panel) * 200 / 700, i, screen_height))
 for i in range(5, 10):
     c.append(CharCard((screen_width * 150 / 800) * 2 / 3 + (screen_width * 150 / 800 * (i - 5)),
                       (screen_height - bottom_panel) * 475 / 700, i, screen_height))
+# set equipment cards
 for i in range(0, 4):
     equipments.append(init_equipment(i))
     equipments[i].rect.center = ((screen_width*150/800) * 1.25 + (screen_width*150/800 * i),
@@ -113,22 +108,16 @@ attacked = False
 casted = False
 old_clicked = False
 once = False
-initial_position1 = []
-initial_position2 = []
+initial_position1, initial_position2 = [], []
 status = "None"
 table_arr = []
-start_point = None
 
-bomb1 = pygame.image.load('pic/Trap_team1.png')
-bomb2 = pygame.image.load('pic/Trap_team2.png')
+
 
 while run:
     screen.fill((220, 254, 254))
     if scene == 1:
         # Welcome screen
-        # draw_text(screen, "Welcome", font, black, 350, 200)
-        # draw_text(screen, "Click to start", font, black, 350, 250)
-        # Image ver.
         main_menu = pygame.image.load("pic/main menu.png")
         screen.blit(main_menu, main_menu.get_rect())
     elif scene == 2:
@@ -137,9 +126,9 @@ while run:
     elif scene == 3:
         # Character selection team2
         scene = choose_character_in_pygame(c, screen, cc_team2, 3)
-        if scene == 4:
-            scene = 9
-    elif scene == 9:
+        # if scene == 4:
+        #    scene = 9
+    elif scene == 4:
         # choose equipment for team 1
         if control < 5:
             control = choose_equipment(char_info1, equipments, screen, control)
@@ -149,8 +138,8 @@ while run:
                 if i.equip.type == "once":
                     method_to_call = getattr(Equipment, i.equip.ability)
                     result = method_to_call(i.equip, i)
-            scene = 10
-    elif scene == 10:
+            scene = 5
+    elif scene == 5:
         # choose equipment for team 2
         if control < 5:
             control = choose_equipment(char_info2, equipments, screen, control)
@@ -160,8 +149,8 @@ while run:
                 if i.equip.type == "once":
                     method_to_call = getattr(Equipment, i.equip.ability)
                     result = method_to_call(i.equip, i)
-            scene = 4
-    elif scene == 4:
+            scene = 6
+    elif scene == 6:
         # Char select start position with UI for team 1
         draw_text(screen, "Team 1 set position: ", pygame.font.SysFont('sfcartoonisthand', 30), black, 180, 15)
         if len(start1) < 5:
@@ -182,9 +171,9 @@ while run:
 
         # End scene
         if len(start1) == 5:
-            scene = 5
+            scene = 7
 
-    elif scene == 5:
+    elif scene == 7:
         # Char select start position with UI for team 2
         draw_text(screen, "Team 2 set position: ", pygame.font.SysFont('sfcartoonisthand', 30), black, 180, 15)
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800,
@@ -224,9 +213,9 @@ while run:
             selected = map3
         # End scene
         if len(start2) == 5:
-            scene = 6
+            scene = 8
 
-    elif scene == 6:
+    elif scene == 8:
         # Roll initiative
         elapsed = pygame.time.get_ticks() - start_time
         # screen.fill(0)
@@ -242,12 +231,9 @@ while run:
             queue.clear()
             for i in range(0, len(char_info1)):
                 init1.append(random.randint(0, 100))
-                print(char_info1[i].Name + ":" + str(init1[-1]))
 
-            print('\nTeam2 roll')
             for i in range(0, len(char_info2)):
                 init2.append(random.randint(0, 100))
-                print(char_info2[i].Name + ":" + str(init2[-1]))
 
             for i in range(0, len(char_info1)):
                 char_info1[i].Mana += 10
@@ -277,13 +263,14 @@ while run:
             queue.sort(key=lambda cha: cha.CurrSpeed, reverse=True)
             fixed_queue = queue.copy()
             reset_stamina(queue)
-            print(queue)
             turn = 0
-            scene = 7
+            scene = 9
 
-    elif scene == 7:
+    elif scene == 9:
         # Gameplay
         mixer.Channel(0).stop()
+        if mixer.Channel(1).get_busy() == 0:
+            mixer.Channel(1).play(pygame.mixer.Sound("audio/qilins.mp3"))
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800,
                                                                                      screen_height*535/700), screen)
         set_map(table_arr, selected, screen, daBox)
@@ -343,7 +330,7 @@ while run:
         if char.HP <= 0:
             turn += 1
             if turn >= len(fixed_queue):
-                scene = 6
+                scene = 8
                 attacked = False
                 casted = False
                 start_time = pygame.time.get_ticks()
@@ -384,35 +371,23 @@ while run:
 
             if len(targets) != 0:
                 status = "attack"
-                print('choose target')
-
-            else:
-                print('No target in range')
-            print("ATK")
 
         # if Move button is pressed
         if Move_button.draw():
             status = "move"
-            print('Current position: ' + str(char.Position))
-            print('Movement: ' + str(char.Stamina))
-            print("Move")
-
         # if skill button is pressed
         if Skill_button.draw() and not casted:
             if mana_check(char):
                 if char.Name == "Infiltrator":
-                    print('Activated Invisibility')
                     char.Invisible = 2
                     casted = True
 
                 elif char.Name == "Grunt":
-                    print('Activated Shield')
                     char.Shield = 30
                     casted = True
 
                 else:
                     status = "skill"
-            print("Skill")
 
         # check whether player takes an action yet
         if status is not None:
@@ -421,26 +396,16 @@ while run:
                 moveable = fillflush(char.Position[0], char.Position[1], char.Stamina, table_arr, screen, [])
                 moveable = list(dict.fromkeys(moveable))
                 moveable.sort()
-                if test:
-                    print(moveable)
-                    test = False
 
             else:
                 # highlight attack/skill range
                 setrange(char, table_arr, screen, status)
 
-        # Draw text on buttons
-        # draw_text(screen, "Attack", font, red, Atk_button.rect.centerx - 20, Atk_button.rect.centery - 10)
-        # draw_text(screen, "Move", font, red, Move_button.rect.centerx - 20, Move_button.rect.centery - 10)
-        # draw_text(screen, "Skill", font, red, Skill_button.rect.centerx - 20, Skill_button.rect.centery - 10)
-        # draw_text(screen, "End", font, red, End_button.rect.centerx - 20, End_button.rect.centery - 10)
-
         # Change to scene 8 when one of the team lost
         if len(char_info1) == 0 or len(char_info2) == 0:
-            scene = 8
-            print('Win scene')
+            scene = 10
 
-    elif scene == 8:
+    elif scene == 10:
         mixer.Channel(1).stop()
         if not once:
             mixer.Channel(0).play(pygame.mixer.Sound("audio/WinSound.mp3"))
@@ -480,7 +445,6 @@ while run:
                             cc_team1.remove(c[i].id)
                             c[i].available = not c[i].available
                         char_info1 = choose_char(cc_team1, 1)
-                        print(char_info1)
 
             # Character selection team2
             if scene == 3:
@@ -497,9 +461,8 @@ while run:
                             cc_team2.remove(c[i].id)
                             c[i].available = not c[i].available
                         char_info2 = choose_char(cc_team2, 2)
-                        print(char_info2)
 
-            if scene == 9:
+            if scene == 4:
                 pos = pygame.mouse.get_pos()
                 # Detect collision with equipment image
                 for i in range(0, 8):
@@ -514,7 +477,7 @@ while run:
                                 if equipments[j].name != char_info1[control].equip.name:
                                     equipments[j].clicked = False
 
-            if scene == 10:
+            if scene == 5:
                 pos = pygame.mouse.get_pos()
                 # Detect collision with equipment image
                 for i in range(0, 8):
@@ -530,47 +493,38 @@ while run:
                                     equipments[j].clicked = False
 
             # Select start position team1
-            if scene == 4:
-
+            if scene == 6:
                 # detect collision with the left-most side of the grid
                 pos = pygame.mouse.get_pos()
                 for i in range(len(table_arr)):
                     if table_arr[0][i].rect.collidepoint(pos):
                         clicked = table_arr[0][i]
-                        start_point = clicked.indexY
-
-                # if detect collision is within the left side of the grid, add character on screen
-                if start_point is not None and (start_point, 0) not in start1:
-                    initial_position1.append(clicked)
-                    char_info1[count].set_position([start_point, 0])
-                    clicked.resident = char_info1[count]
-                    print(clicked.resident)
-                    start1.append((start_point, 0))
-                    count += 1
-                    start_point = None
+                        # if detect collision is within the left side of the grid, add character on screen
+                        if (clicked.indexY, 0) not in start1:
+                            initial_position1.append(clicked)
+                            char_info1[count].set_position([clicked.indexY, 0])
+                            clicked.resident = char_info1[count]
+                            start1.append((clicked.indexY, 0))
+                            count += 1
 
             # Select start position team1
-            if scene == 5:
+            if scene == 7:
 
                 # detect collision with the right-most side of the grid
                 pos = pygame.mouse.get_pos()
                 for i in range(len(table_arr)):
                     if table_arr[9][i].rect.collidepoint(pos):
                         clicked = table_arr[9][i]
-                        start_point = clicked.indexY
-
-                # if detect collision is within the right side of the grid, add character on screen
-                if start_point is not None and (start_point, 9) not in start2:
-                    initial_position2.append(clicked)
-                    char_info2[count - 5].set_position([start_point, 9])
-                    clicked.resident = char_info2[count - 5]
-                    print(clicked.resident)
-                    start2.append((start_point, 9))
-                    count += 1
-                    start_point = None
+                        # if detect collision is within the right side of the grid, add character on screen
+                        if (clicked.indexY, 9) not in start2:
+                            initial_position2.append(clicked)
+                            char_info2[count - 5].set_position([clicked.indexY, 9])
+                            clicked.resident = char_info2[count - 5]
+                            start2.append((clicked.indexY, 9))
+                            count += 1
 
             # Gameplay scene
-            if scene == 7:
+            if scene == 9:
                 pos = pygame.mouse.get_pos()
 
                 # Detect collision with the grid
@@ -578,29 +532,26 @@ while run:
                     for j in range(len(table_arr[i])):
                         if table_arr[i][j].rect.collidepoint(pos):
                             clicked = table_arr[i][j]
-                            print(clicked.indexX, clicked.indexY)
+                            x = clicked.indexX
+                            y = clicked.indexY
 
                             # storing to display selected character info.
                             if clicked.resident is not None and status != "move":
                                 old_clicked = clicked.resident
 
                                 if status == "attack":
-                                    for i2 in range(0, len(targets)):
-                                        print(str(i2) + ':' + str(targets[i2].Name))
-
                                     # check whether target is attackable
                                     if clicked.resident in targets:
                                         attack(char, clicked.resident)
                                         attacked = True
                                         status = None
                                         if check_death(clicked.resident):
+                                            print(check)
                                             check.remove(clicked.resident)
                                             if clicked.resident in queue:
                                                 queue.remove(clicked.resident)
 
                                 elif status == "skill":
-                                    x = clicked.indexX
-                                    y = clicked.indexY
                                     if char.Name == "Hospitallier":
 
                                         # gather target that's allies and is in range of the skill
@@ -611,7 +562,6 @@ while run:
 
                                         # if there are allies in range
                                         if len(allies) != 0:
-                                            print('choose allies')
                                             for i3 in range(0, len(allies)):
                                                 print(str(i3) + ':' + str(allies[i3].Name))
 
@@ -620,11 +570,8 @@ while run:
                                                 eval(char.Skill_name + '(' + 'char, clicked.resident' + ')')
                                                 casted = True
                                                 status = None
-                                                print(clicked.resident.HP)
-                                        else:
-                                            print('No ally in range')
-                                    elif char.Name == "Trapper":
-                                        pass
+
+
                                     # Damaging skills
                                     else:
                                         if int(char.Team) == 1:
@@ -673,8 +620,6 @@ while run:
 
                             # No character insides the clicked grid
                             elif status == "move":
-                                x = clicked.indexX
-                                y = clicked.indexY
                                 if (x, y) in moveable:
                                     if move(char, (y, x), table_arr, bomb_list):
                                         if int(char.Team) == 1:
@@ -692,15 +637,11 @@ while run:
                                         print('cannot move')
 
                             elif char.Name == "Battlemage" and status == "skill":
-                                x = clicked.indexX
-                                y = clicked.indexY
                                 eval(char.Skill_name + '(' + 'char, [y,x]' + ')')
                                 casted = True
                                 status = None
 
                             elif char.Name == "Trapper" and status == "skill":
-                                x = clicked.indexX
-                                y = clicked.indexY
                                 if clicked.resident is None:
                                     if char.Team == 1:
                                         if trap(char, (x, y), table_arr, bomb1, screen, bomb_list):
@@ -717,14 +658,15 @@ while run:
                     attacked = False
                     casted = False
                     status = None
-                    test = True
+
                     if char.equip.type == "utility":
                         method_to_call = getattr(Equipment, char.equip.ability)
                         method_to_call(char.equip, char)
                     queue.remove(char)
+
                     # if the turn is equal/greater than current queue -> go back to roll initial speed scene
                     if turn >= len(fixed_queue):
-                        scene = 6
+                        scene = 8
                         start_time = pygame.time.get_ticks()
                         angle = 0
 
