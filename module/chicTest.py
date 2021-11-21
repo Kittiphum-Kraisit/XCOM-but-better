@@ -71,7 +71,7 @@ class Grid:
         surface.blit(sc, (self.positionX + 3, self.positionY + 3))
 
 
-def fillflush(x, y, ranges, table, surface, arr):
+def flood_fill(x, y, ranges, table, surface, arr):
     # x, y = position
     if table[y][x].resident is None:
         table[y][x].highlight(surface, (0, 204, 0, 50))
@@ -87,13 +87,13 @@ def fillflush(x, y, ranges, table, surface, arr):
 
     # if x + 1 < len(table) and y + 1 < len(table[0]) and x - 1 > 0 and y - 1 > 0:
     if (y + 1 < len(table)) and (table[y + 1][x].resident is None or isinstance(table[y + 1][x].resident, Bomb)):
-        fillflush(x, y + 1, ranges - 1, table, surface, arr)
+        flood_fill(x, y + 1, ranges - 1, table, surface, arr)
     if (x + 1 < len(table[0])) and (table[y][x + 1].resident is None or isinstance(table[y][x + 1].resident, Bomb)):
-        fillflush(x + 1, y, ranges - 1, table, surface, arr)
+        flood_fill(x + 1, y, ranges - 1, table, surface, arr)
     if (y - 1 >= 0) and (table[y - 1][x].resident is None or isinstance(table[y - 1][x].resident, Bomb)):
-        fillflush(x, y - 1, ranges - 1, table, surface, arr)
+        flood_fill(x, y - 1, ranges - 1, table, surface, arr)
     if (x - 1 >= 0) and (table[y][x - 1].resident is None or isinstance(table[y][x - 1].resident, Bomb)):
-        fillflush(x - 1, y, ranges - 1, table, surface, arr)
+        flood_fill(x - 1, y, ranges - 1, table, surface, arr)
     return arr
 
 

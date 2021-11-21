@@ -36,9 +36,7 @@ def line_of_sight(char, enemies, obstacles):
     # Formula: y = (y1-y0/(x1-x0))*(x-x0) + y0
     y0, x0 = char.Position
     attackable = enemies.copy()
-    var_x = 0
     for enemy in enemies:
-        var_x += 1
         y1, x1 = enemy.Position
         xs = [x0 + x / 4 for x in range((x1 - x0) * 4)] if x1 > x0 \
             else [x1 + x / 4 for x in range((x0 - x1) * 4)]

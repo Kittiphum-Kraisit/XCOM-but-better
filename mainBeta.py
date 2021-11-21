@@ -270,7 +270,7 @@ while run:
         # Gameplay
         mixer.Channel(0).stop()
         if mixer.Channel(1).get_busy() == 0:
-            mixer.Channel(1).play(pygame.mixer.Sound("audio/qilins.mp3"))
+            mixer.Channel(1).play(pygame.mixer.Sound("audio/FightMusic.mp3"))
         table_arr = drawtable(10, 10, (screen_width*120/800, screen_height*80/700), (screen_width*620/800,
                                                                                      screen_height*535/700), screen)
         set_map(table_arr, selected, screen, daBox)
@@ -283,7 +283,7 @@ while run:
         arrow_img = pygame.image.load("pic/queue/arrow.png")
         arrow_img = pygame.transform.scale(arrow_img, (math.floor(arrow_img.get_width() * 0.5),
                                                        math.floor(arrow_img.get_height() * 0.5)))
-        draw_img(screen, arrow_img, (130, -15))
+        draw_img(screen, arrow_img, (158, -15))
         if old_clicked is not False and isinstance(old_clicked, Character):
             draw_text(screen, old_clicked.Name, font, black, screen_width * 100/800, screen_height-bottom_panel)
             draw_text(screen, "HP: " + str(old_clicked.HP), font, red, screen_width * 100/800,
@@ -393,7 +393,7 @@ while run:
         if status is not None:
             # if player is moving, highlight the available grid space
             if status == "move":
-                moveable = fillflush(char.Position[0], char.Position[1], char.Stamina, table_arr, screen, [])
+                moveable = flood_fill(char.Position[0], char.Position[1], char.Stamina, table_arr, screen, [])
                 moveable = list(dict.fromkeys(moveable))
                 moveable.sort()
 
