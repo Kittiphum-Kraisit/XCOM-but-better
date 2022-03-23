@@ -1,2 +1,2 @@
 # XCOM-but-better
-with blackjact and hookers
+Chibi warriors is a turn-based Strategy game constructed from Python programming language. This game is a project for a Principles of Computation and Applications class in the  second year. Players can choose up to 5 characters from 10 uniquely created characters all with different abilities and stats. They will then use characters they select to battle in a turn-based style where the last player standing will be the winner. Coupled with cute art style and relaxing music, this is a good game to relax with friends.
